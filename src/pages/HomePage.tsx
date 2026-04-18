@@ -1,149 +1,108 @@
-// Home page of the app, Currently a demo page for demonstration.
-// Please rewrite this file to implement your own logic. Do not replace or delete it, simply rewrite this HomePage.tsx file.
-import { useEffect, useState, useMemo } from 'react'
-import { Sparkles } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { ThemeToggle } from '@/components/ThemeToggle'
-import { Toaster, toast } from '@/components/ui/sonner'
-
-// Convex Auth block
-import { Authenticated, Unauthenticated, useQuery } from "convex/react";
+import React from 'react';
+import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { Authenticated, Unauthenticated } from "convex/react";
 import { SignInForm } from "../components/SignInForm";
-import { SignOutButton } from "../components/SignOutButton";
-import { TemplateDemo, HAS_TEMPLATE_DEMO } from '@/components/TemplateDemo';
-
-//import { useQuery, useMutation } from 'convex/react';
-//import { api } from '@convex/_generated/api';
-
-// Timer store: independent slice with a clear, minimal API, for demonstration
-function formatDuration(ms: number): string {
-  const total = Math.max(0, Math.floor(ms / 1000))
-  const m = Math.floor(total / 60)
-  const s = total % 60
-  return `${m}:${s.toString().padStart(2, '0')}`
-}
-
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { PlusCircle, ArrowDownToLine, History, Wallet, User } from "lucide-react";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 export function HomePage() {
-  // Select only what is needed to avoid unnecessary re-renders
-  const [coins, setCoins] = useState(0)
-  const [isRunning, setIsRunning] = useState(false)
-  const [startedAt, setStartedAt] = useState<number | null>(null)
-  const [elapsedMs, setElapsedMs] = useState(0)
-
-  useEffect(() => {
-    if (!isRunning || startedAt === null) return
-
-    const t = setInterval(() => {
-      setElapsedMs(Date.now() - startedAt)
-    }, 250)
-
-    return () => clearInterval(t)
-  }, [isRunning, startedAt])
-
-  const formatted = useMemo(() => formatDuration(elapsedMs), [elapsedMs])
-
-  const onPleaseWait = () => {
-    setCoins((c) => c + 1)
-
-    if (!isRunning) {
-      // Resume from the current elapsed time
-      setStartedAt(Date.now() - elapsedMs)
-      setIsRunning(true)
-      toast.success('Building your app…', {
-        description: "Hang tight, we're setting everything up.",
-      })
-      return
-    } 
-
-      setIsRunning(false)
-      toast.info('Taking a short pause', {
-        description: 'We\'ll continue shortly.',
-      })
-  }
-
-  const onReset = () => {
-    setCoins(0)
-    setIsRunning(false)
-    setStartedAt(null)
-    setElapsedMs(0)
-    toast('Reset complete')
-  }
-
-  const onAddCoin = () => {
-    setCoins((c) => c + 1)
-    toast('Coin added')
-  }
-
-  const loggedInUser = useQuery(api.auth.loggedInUser)
-
+  const transactions = useQuery(api.transactions.getUserTransactions) ?? [];
+  const user = useQuery(api.auth.loggedInUser);
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "approved": return <Badge className="bg-emerald-500 hover:bg-emerald-600">Approuvé</Badge>;
+      case "rejected": return <Badge variant="destructive">Rejeté</Badge>;
+      default: return <Badge variant="secondary" className="bg-amber-100 text-amber-700 hover:bg-amber-100">En attente</Badge>;
+    }
+  };
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground p-4 overflow-hidden relative">
-        <ThemeToggle />
-        <SignOutButton />
-        <div className="absolute inset-0 bg-gradient-rainbow opacity-10 dark:opacity-20 pointer-events-none" />
-        <div className="text-center space-y-8 relative z-10 animate-fade-in w-full">
-          <div className="flex justify-center">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-primary floating">
-              <Sparkles className="w-8 h-8 text-white rotating" />
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="py-8 md:py-10 lg:py-12 space-y-8">
+        <Authenticated>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-6">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-foreground">Tableau de bord</h1>
+              <p className="text-muted-foreground mt-1 flex items-center gap-2">
+                <User className="h-4 w-4" /> {user?.email}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
+                <Link to="/deposit"><PlusCircle className="mr-2 h-5 w-5" /> Dépôt</Link>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link to="/withdraw"><ArrowDownToLine className="mr-2 h-5 w-5" /> Retrait</Link>
+              </Button>
             </div>
           </div>
-          <Authenticated>
-            <p className="text-xl text-secondary">
-              Welcome back, {loggedInUser?.email ?? "friend"}!
-            </p>
-          </Authenticated>
-          <Unauthenticated>
-            <p className="text-xl text-secondary">Sign in to get started</p>
-          </Unauthenticated>
-          <h1 className="text-5xl md:text-7xl font-display font-bold text-balance leading-tight">
-            Creating your <span className="text-gradient">app</span>
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto text-pretty">
-            Your application would be ready soon.
-          </p>
-          {HAS_TEMPLATE_DEMO ? (
-            <div className="max-w-5xl mx-auto text-left">
-              <TemplateDemo />
-            </div>
-          ) : (
-            <>
-              <div className="flex justify-center gap-4">
-                <Button 
-                  size="lg"
-                  onClick={onPleaseWait}
-                  className="btn-gradient px-8 py-4 text-lg font-semibold hover:-translate-y-0.5 transition-all duration-200"
-                  aria-live="polite"
-                >
-                  Please Wait
-                </Button>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card className="shadow-sm border-2">
+              <CardHeader className="pb-2">
+                <CardDescription className="uppercase font-semibold text-2xs tracking-wider">Solde Démo</CardDescription>
+                <CardTitle className="text-3xl font-bold flex items-center gap-2">
+                  <Wallet className="h-6 w-6 text-primary" /> 50,000 FCFA
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground italic">*Ceci est un solde fictif pour démonstration.*</p>
+              </CardContent>
+            </Card>
+          </div>
+          <Card className="shadow-md border-0 ring-1 ring-border">
+            <CardHeader className="flex flex-row items-center justify-between border-b bg-muted/30">
+              <div>
+                <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                  <History className="h-5 w-5 text-muted-foreground" /> Activité Récente
+                </CardTitle>
               </div>
-              <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
-                <div>
-                  Time elapsed: <span className="font-medium tabular-nums text-foreground">{formatted}</span>
+            </CardHeader>
+            <CardContent className="p-0">
+              {transactions.length > 0 ? (
+                <div className="divide-y overflow-hidden rounded-b-xl">
+                  {transactions.map((tx) => (
+                    <div key={tx._id} className="p-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
+                      <div className="flex flex-col gap-1">
+                        <span className="font-semibold text-sm">
+                          {tx.type === "deposit" ? "Dépôt" : "Retrait"} - {tx.amount.toLocaleString()} FCFA
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {format(tx.createdAt, "PPP 'à' p", { locale: fr })}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="hidden sm:inline text-xs font-mono text-muted-foreground">ID: {tx.accountId.slice(0, 8)}...</span>
+                        {getStatusBadge(tx.status)}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div>
-                  Coins: <span className="font-medium tabular-nums text-foreground">{coins}</span>
+              ) : (
+                <div className="py-16 text-center text-muted-foreground">
+                  Aucune transaction trouvée. Commencez par un dépôt !
                 </div>
-              </div>
-              <div className="flex justify-center gap-2">
-                <Button variant="outline" size="sm" onClick={onReset}>
-                  Reset
-                </Button>
-                <Button variant="outline" size="sm" onClick={onAddCoin}>
-                  Add Coin
-                </Button>
-              </div>
-            </>
-          )}
-        </div>
+              )}
+            </CardContent>
+          </Card>
+        </Authenticated>
         <Unauthenticated>
-          <SignInForm />
+          <div className="max-w-md mx-auto mt-12">
+            <Card className="shadow-2xl">
+              <CardHeader className="text-center">
+                <CardTitle className="text-2xl font-bold">Connexion DemoBet</CardTitle>
+                <CardDescription>Accédez à votre compte de recharge sécurisé</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <SignInForm />
+              </CardContent>
+            </Card>
+          </div>
         </Unauthenticated>
-        <footer className="absolute bottom-8 text-center text-muted-foreground/80">
-          <p>Built with love at Andromo</p>
-        </footer>
-        <Toaster richColors closeButton />
       </div>
-  )
+    </div>
+  );
 }
