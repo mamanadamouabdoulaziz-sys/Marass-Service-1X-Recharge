@@ -5,9 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { Upload, ArrowLeft, Loader2 } from "lucide-react";
+import { Upload, ArrowLeft, Loader2, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { SuccessModal } from "@/components/SuccessModal";
 import { Id } from "../../convex/_generated/dataModel";
@@ -65,28 +66,34 @@ export function DepositPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="py-8 md:py-10 lg:py-12">
-        <Button asChild variant="ghost" className="mb-6">
+        <Button asChild variant="ghost" className="mb-6 hover:bg-white/5">
           <Link to="/"><ArrowLeft className="mr-2 h-4 w-4" /> Retour au tableau de bord</Link>
         </Button>
-        <div className="max-w-2xl mx-auto">
-          <Card className="shadow-lg border-2">
-            <CardHeader className="bg-primary/5 border-b">
-              <CardTitle className="text-2xl font-bold">Effectuer un Dépôt</CardTitle>
-              <CardDescription>Remplissez les informations après avoir effectué votre transfert réel simulé.</CardDescription>
+        <div className="max-w-2xl mx-auto space-y-6">
+          <Alert variant="destructive" className="bg-destructive/20 border-destructive animate-pulse shadow-lg">
+            <AlertTriangle className="h-5 w-5" />
+            <AlertDescription className="text-sm font-bold leading-relaxed">
+              SVP Effectuer un Compte à Compte <span className="underline">MyNita, Amanata ou Wave</span> au <span className="text-lg">80 48 48 30</span> avant d'envoyer la Demande.
+            </AlertDescription>
+          </Alert>
+          <Card className="glass-dark border-white/10">
+            <CardHeader className="bg-primary/10 border-b border-white/5">
+              <CardTitle className="text-2xl font-bold text-white">Effectuer un Dépôt</CardTitle>
+              <CardDescription className="text-muted-foreground/80">Remplissez les informations après avoir effectué votre transfert réel simulé.</CardDescription>
             </CardHeader>
             <CardContent className="pt-8">
               <form onSubmit={onSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="accountId">ID Compte DemoBet</Label>
-                  <Input id="accountId" name="accountId" placeholder="Entrez votre ID Compte" required disabled={loading} />
+                  <Label htmlFor="accountId" className="text-foreground">ID Compte DemoBet</Label>
+                  <Input id="accountId" name="accountId" placeholder="Entrez votre ID Compte" required disabled={loading} className="bg-white/5 border-white/10" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="amount">Montant (FCFA)</Label>
-                  <Input id="amount" name="amount" type="number" placeholder="5000" min="500" required disabled={loading} />
+                  <Label htmlFor="amount" className="text-foreground">Montant (FCFA)</Label>
+                  <Input id="amount" name="amount" type="number" placeholder="5000" min="500" required disabled={loading} className="bg-white/5 border-white/10" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="proof">Preuve de paiement (Screenshot)</Label>
-                  <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:bg-muted/50 transition-colors cursor-pointer relative">
+                  <Label htmlFor="proof" className="text-foreground">Preuve de paiement (Screenshot)</Label>
+                  <div className="border-2 border-dashed border-white/20 rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:bg-white/5 transition-colors cursor-pointer relative">
                     <input
                       type="file"
                       id="proof"
@@ -96,12 +103,12 @@ export function DepositPage() {
                       disabled={loading}
                       onChange={(e) => setFile(e.target.files?.[0] || null)}
                     />
-                    <Upload className="h-8 w-8 text-muted-foreground" />
-                    <span className="text-sm font-medium">{file ? file.name : "Cliquez pour télécharger ou glissez-déposez"}</span>
+                    <Upload className="h-8 w-8 text-primary" />
+                    <span className="text-sm font-medium text-foreground">{file ? file.name : "Cliquez pour télécharger ou glissez-déposez"}</span>
                     <span className="text-xs text-muted-foreground">Format JPG, PNG (Max 5MB)</span>
                   </div>
                 </div>
-                <Button type="submit" className="w-full h-12 text-lg" disabled={loading}>
+                <Button type="submit" className="w-full h-12 text-lg btn-gradient border-none" disabled={loading}>
                   {loading ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Traitement...</> : "Soumettre le Dépôt"}
                 </Button>
               </form>

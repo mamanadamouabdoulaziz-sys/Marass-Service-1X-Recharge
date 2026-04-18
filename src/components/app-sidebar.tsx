@@ -7,7 +7,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarHeader,
-  SidebarSeparator,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
@@ -21,24 +20,35 @@ const navItems = [
 export function AppSidebar(): JSX.Element {
   const { pathname } = useLocation();
   return (
-    <Sidebar>
-      <SidebarHeader className="border-b px-4 py-6">
+    <Sidebar className="border-r border-white/5 bg-background">
+      <SidebarHeader className="border-b border-white/5 px-4 py-8">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-            <ShieldCheck className="text-primary-foreground h-5 w-5" />
+          <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-lg shadow-primary/20">
+            <ShieldCheck className="text-white h-6 w-6" />
           </div>
-          <span className="text-lg font-bold tracking-tight">DemoBet Pay</span>
+          <div className="flex flex-col">
+            <span className="text-xl font-black tracking-tighter text-white uppercase leading-none">DemoBet</span>
+            <span className="text-[10px] font-bold text-primary uppercase tracking-widest mt-1">Intermediary</span>
+          </div>
         </div>
       </SidebarHeader>
-      <SidebarContent className="py-4">
+      <SidebarContent className="py-6">
         <SidebarGroup>
           <SidebarMenu>
             {navItems.map((item) => (
-              <SidebarMenuItem key={item.path} className="px-2">
-                <SidebarMenuButton asChild isActive={pathname === item.path} className="py-6 px-4">
-                  <Link to={item.path}>
-                    <item.icon className="h-5 w-5" />
-                    <span className="font-medium">{item.label}</span>
+              <SidebarMenuItem key={item.path} className="px-3 mb-1">
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={pathname === item.path} 
+                  className={`py-7 px-4 rounded-xl transition-all duration-300 border border-transparent ${
+                    pathname === item.path 
+                      ? "bg-primary/10 border-primary/20 text-primary" 
+                      : "hover:bg-white/5 text-muted-foreground hover:text-white"
+                  }`}
+                >
+                  <Link to={item.path} className="flex items-center gap-4">
+                    <item.icon className={`h-5 w-5 ${pathname === item.path ? "text-primary" : "text-muted-foreground"}`} />
+                    <span className="font-bold text-sm">{item.label}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -46,9 +56,11 @@ export function AppSidebar(): JSX.Element {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t p-4">
-        <div className="text-[10px] text-muted-foreground uppercase font-semibold text-center">
-          Système Sécurisé Demo
+      <SidebarFooter className="border-t border-white/5 p-6">
+        <div className="glass-dark rounded-lg p-3 text-center border-white/5">
+          <div className="text-[10px] text-muted-foreground uppercase font-black tracking-widest opacity-60">
+            Secure Demo System v2.0
+          </div>
         </div>
       </SidebarFooter>
     </Sidebar>

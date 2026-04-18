@@ -5,9 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { Upload, ArrowLeft, Loader2 } from "lucide-react";
+import { Upload, ArrowLeft, Loader2, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { SuccessModal } from "@/components/SuccessModal";
 import { Id } from "../../convex/_generated/dataModel";
@@ -69,32 +70,38 @@ export function WithdrawPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="py-8 md:py-10 lg:py-12">
-        <Button asChild variant="ghost" className="mb-6">
+        <Button asChild variant="ghost" className="mb-6 hover:bg-white/5">
           <Link to="/"><ArrowLeft className="mr-2 h-4 w-4" /> Retour au tableau de bord</Link>
         </Button>
-        <div className="max-w-2xl mx-auto">
-          <Card className="shadow-lg border-2">
-            <CardHeader className="bg-destructive/5 border-b border-destructive/10">
-              <CardTitle className="text-2xl font-bold">Demande de Retrait</CardTitle>
-              <CardDescription>Convertissez vos gains DemoBet en argent MobilePay réel.</CardDescription>
+        <div className="max-w-2xl mx-auto space-y-6">
+          <Alert variant="destructive" className="bg-destructive/20 border-destructive animate-pulse shadow-lg">
+            <AlertTriangle className="h-5 w-5" />
+            <AlertDescription className="text-sm font-bold leading-relaxed">
+              SVP Effectuer un Compte à Compte <span className="underline">MyNita, Amanata ou Wave</span> au <span className="text-lg">80 48 48 30</span> avant d'envoyer la Demande.
+            </AlertDescription>
+          </Alert>
+          <Card className="glass-dark border-white/10">
+            <CardHeader className="bg-destructive/10 border-b border-white/5">
+              <CardTitle className="text-2xl font-bold text-white">Demande de Retrait</CardTitle>
+              <CardDescription className="text-muted-foreground/80">Convertissez vos gains DemoBet en argent MyNita, Amanata ou Wave.</CardDescription>
             </CardHeader>
             <CardContent className="pt-8">
               <form onSubmit={onSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="accountId">Code de Retrait DemoBet</Label>
-                  <Input id="accountId" name="accountId" placeholder="Entrez le code généré par l'app DemoBet" required disabled={loading} />
+                  <Label htmlFor="accountId" className="text-foreground">Code de Retrait DemoBet</Label>
+                  <Input id="accountId" name="accountId" placeholder="Entrez le code généré par l'app DemoBet" required disabled={loading} className="bg-white/5 border-white/10" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="destinationNumber">Numéro de réception (Orange/MTN)</Label>
-                  <Input id="destinationNumber" name="destinationNumber" type="tel" placeholder="Ex: 6XXXXXXXX" required disabled={loading} />
+                  <Label htmlFor="destinationNumber" className="text-foreground">Numéro de réception (MyNita/Amanata ou Wave)</Label>
+                  <Input id="destinationNumber" name="destinationNumber" type="tel" placeholder="Ex: 80 48 48 30" required disabled={loading} className="bg-white/5 border-white/10" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="amount">Montant à retirer (FCFA)</Label>
-                  <Input id="amount" name="amount" type="number" placeholder="10000" min="1000" required disabled={loading} />
+                  <Label htmlFor="amount" className="text-foreground">Montant à retirer (FCFA)</Label>
+                  <Input id="amount" name="amount" type="number" placeholder="10000" min="1000" required disabled={loading} className="bg-white/5 border-white/10" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="proof">Preuve du code de retrait (Screenshot)</Label>
-                  <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:bg-muted/50 transition-colors cursor-pointer relative">
+                  <Label htmlFor="proof" className="text-foreground">Preuve du code de retrait (Screenshot)</Label>
+                  <div className="border-2 border-dashed border-white/20 rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:bg-white/5 transition-colors cursor-pointer relative">
                     <input
                       type="file"
                       id="proof"
@@ -104,11 +111,11 @@ export function WithdrawPage() {
                       disabled={loading}
                       onChange={(e) => setFile(e.target.files?.[0] || null)}
                     />
-                    <Upload className="h-8 w-8 text-muted-foreground" />
-                    <span className="text-sm font-medium">{file ? file.name : "Capture du code de retrait"}</span>
+                    <Upload className="h-8 w-8 text-primary" />
+                    <span className="text-sm font-medium text-foreground">{file ? file.name : "Capture du code de retrait"}</span>
                   </div>
                 </div>
-                <Button type="submit" variant="default" className="w-full h-12 text-lg" disabled={loading}>
+                <Button type="submit" className="w-full h-12 text-lg btn-gradient border-none" disabled={loading}>
                   {loading ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Envoi...</> : "Envoyer la demande de retrait"}
                 </Button>
               </form>
