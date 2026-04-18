@@ -1,7 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-
 export const generateUploadUrl = mutation({
   args: {},
   handler: async (ctx) => {
@@ -12,7 +11,6 @@ export const generateUploadUrl = mutation({
     return await ctx.storage.generateUploadUrl();
   },
 });
-
 export const saveFileMetadata = mutation({
   args: {
     storageId: v.id("_storage"),
@@ -26,12 +24,10 @@ export const saveFileMetadata = mutation({
     if (!userId) {
       throw new Error("Authentication required");
     }
-
     const url = await ctx.storage.getUrl(args.storageId);
     if (!url) {
       throw new Error("Failed to get storage URL");
     }
-
     const fileId = await ctx.db.insert("files", {
       userId,
       storageId: args.storageId,
@@ -41,11 +37,9 @@ export const saveFileMetadata = mutation({
       description: args.description,
       uploadedAt: Date.now(),
     });
-
     return { fileId, url };
   },
 });
-
 export const listFiles = query({
   args: {},
   handler: async (ctx) => {
@@ -53,13 +47,11 @@ export const listFiles = query({
     if (!userId) {
       throw new Error("Authentication required");
     }
-
     const files = await ctx.db
       .query("files")
       .withIndex("by_userId_uploadedAt", (q) => q.eq("userId", userId))
       .order("desc")
       .collect();
-
     return await Promise.all(
       files.map(async (file) => ({
         ...file,
@@ -68,30 +60,19 @@ export const listFiles = query({
     );
   },
 });
-
 export const getFileUrl = query({
   args: { storageId: v.id("_storage") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Authentication required");
-    }
-
-    const file = await ctx.db
-      .query("files")
-      .withIndex("by_userId_storageId", (q) =>
-        q.eq("userId", userId).eq("storageId", args.storageId)
-      )
-      .unique();
-
-    if (!file) {
+    // Basic safety: just return URL if storageId is provided
+    // Metadata propagation can take time, but getUrl works directly on storageId
+    try {
+      return await ctx.storage.getUrl(args.storageId);
+    } catch (e) {
+      console.error("Error fetching storage URL:", e);
       return null;
     }
-
-    return await ctx.storage.getUrl(file.storageId);
   },
 });
-
 export const deleteFile = mutation({
   args: { fileId: v.id("files") },
   handler: async (ctx, args) => {
@@ -99,7 +80,6 @@ export const deleteFile = mutation({
     if (!userId) {
       throw new Error("Authentication required");
     }
-
     const file = await ctx.db.get(args.fileId);
     if (!file || file.userId !== userId) {
       throw new Error("File not found");

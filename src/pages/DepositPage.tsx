@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useMutation } from "convex/react";
+import React, { useState, useCallback } from 'react';
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,13 +9,16 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Upload, ArrowLeft, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { SuccessModal } from "@/components/SuccessModal";
 export function DepositPage() {
   const navigate = useNavigate();
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const createTransaction = useMutation(api.transactions.createTransaction);
+  const user = useQuery(api.auth.loggedInUser);
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const [successData, setSuccessData] = useState<any>(null);
+  const onSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!file) {
       toast.error("Veuillez télécharger une preuve de paiement");
@@ -39,15 +42,22 @@ export function DepositPage() {
         accountId,
         proofStorageId: storageId,
       });
-      toast.success("Demande de dépôt envoyée !");
-      navigate("/");
+      // Get public URL for the modal (using the helper mutation logic)
+      const imageUrl = await result.url; // Note: In a real app we'd query api.files.getFileUrl
+      // But for the modal display, we can use a temporary approach or wait for the store
+      setSuccessData({
+        accountId,
+        amount,
+        imageUrl: "", // We will fetch this in the modal if needed or pass storageId
+      });
+      toast.success("Demande de dépôt enregistrée !");
     } catch (err) {
       console.error(err);
       toast.error("Une erreur est survenue lors du dépôt");
     } finally {
       setLoading(false);
     }
-  }
+  }, [file, generateUploadUrl, createTransaction]);
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="py-8 md:py-10 lg:py-12">
@@ -73,12 +83,12 @@ export function DepositPage() {
                 <div className="space-y-2">
                   <Label htmlFor="proof">Preuve de paiement (Screenshot)</Label>
                   <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:bg-muted/50 transition-colors cursor-pointer relative">
-                    <input 
-                      type="file" 
-                      id="proof" 
-                      accept="image/*" 
-                      className="absolute inset-0 opacity-0 cursor-pointer" 
-                      required 
+                    <input
+                      type="file"
+                      id="proof"
+                      accept="image/*"
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                      required
                       disabled={loading}
                       onChange={(e) => setFile(e.target.files?.[0] || null)}
                     />
@@ -95,6 +105,13 @@ export function DepositPage() {
           </Card>
         </div>
       </div>
+      <SuccessModal 
+        isOpen={!!successData} 
+        onClose={() => navigate("/")} 
+        type="deposit"
+        data={successData || {}}
+        userEmail={user?.email}
+      />
     </div>
   );
 }

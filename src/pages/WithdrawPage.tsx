@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useMutation } from "convex/react";
+import React, { useState, useCallback } from 'react';
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,13 +9,16 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Upload, ArrowLeft, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { SuccessModal } from "@/components/SuccessModal";
 export function WithdrawPage() {
   const navigate = useNavigate();
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const createTransaction = useMutation(api.transactions.createTransaction);
+  const user = useQuery(api.auth.loggedInUser);
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const [successData, setSuccessData] = useState<any>(null);
+  const onSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!file) {
       toast.error("Veuillez télécharger une preuve de retrait");
@@ -24,7 +27,7 @@ export function WithdrawPage() {
     setLoading(true);
     const formData = new FormData(e.currentTarget);
     const amount = Number(formData.get("amount"));
-    const accountId = formData.get("accountId") as string; // Withdrawal code
+    const accountId = formData.get("accountId") as string;
     const destinationNumber = formData.get("destinationNumber") as string;
     try {
       const uploadUrl = await generateUploadUrl();
@@ -37,19 +40,23 @@ export function WithdrawPage() {
       await createTransaction({
         type: "withdraw",
         amount,
-        accountId, // Using accountId as withdrawal code
+        accountId,
         proofStorageId: storageId,
         destinationNumber,
       });
-      toast.success("Demande de retrait envoyée !");
-      navigate("/");
+      setSuccessData({
+        accountId,
+        amount,
+        destinationNumber,
+      });
+      toast.success("Demande de retrait enregistrée !");
     } catch (err) {
       console.error(err);
       toast.error("Une erreur est survenue lors du retrait");
     } finally {
       setLoading(false);
     }
-  }
+  }, [file, generateUploadUrl, createTransaction]);
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="py-8 md:py-10 lg:py-12">
@@ -79,12 +86,12 @@ export function WithdrawPage() {
                 <div className="space-y-2">
                   <Label htmlFor="proof">Preuve du code de retrait (Screenshot)</Label>
                   <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:bg-muted/50 transition-colors cursor-pointer relative">
-                    <input 
-                      type="file" 
-                      id="proof" 
-                      accept="image/*" 
-                      className="absolute inset-0 opacity-0 cursor-pointer" 
-                      required 
+                    <input
+                      type="file"
+                      id="proof"
+                      accept="image/*"
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                      required
                       disabled={loading}
                       onChange={(e) => setFile(e.target.files?.[0] || null)}
                     />
@@ -100,6 +107,13 @@ export function WithdrawPage() {
           </Card>
         </div>
       </div>
+      <SuccessModal 
+        isOpen={!!successData} 
+        onClose={() => navigate("/")} 
+        type="withdraw"
+        data={successData || {}}
+        userEmail={user?.email}
+      />
     </div>
   );
 }

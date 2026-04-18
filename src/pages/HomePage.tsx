@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { PlusCircle, ArrowDownToLine, History, Wallet, User } from "lucide-react";
+import { PlusCircle, ArrowDownToLine, History, User, MessageCircle } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 export function HomePage() {
@@ -40,54 +40,46 @@ export function HomePage() {
               </Button>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card className="shadow-sm border-2">
-              <CardHeader className="pb-2">
-                <CardDescription className="uppercase font-semibold text-2xs tracking-wider">Solde Démo</CardDescription>
-                <CardTitle className="text-3xl font-bold flex items-center gap-2">
-                  <Wallet className="h-6 w-6 text-primary" /> 50,000 FCFA
-                </CardTitle>
+          <div className="grid grid-cols-1 gap-6">
+            <Card className="shadow-md border-0 ring-1 ring-border">
+              <CardHeader className="flex flex-row items-center justify-between border-b bg-muted/30">
+                <div>
+                  <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                    <History className="h-5 w-5 text-muted-foreground" /> Activité Récente
+                  </CardTitle>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <MessageCircle className="h-3 w-3 text-emerald-500" /> Support 24/7
+                </div>
               </CardHeader>
-              <CardContent>
-                <p className="text-xs text-muted-foreground italic">*Ceci est un solde fictif pour démonstration.*</p>
+              <CardContent className="p-0">
+                {transactions.length > 0 ? (
+                  <div className="divide-y overflow-hidden rounded-b-xl">
+                    {transactions.map((tx) => (
+                      <div key={tx._id} className="p-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
+                        <div className="flex flex-col gap-1">
+                          <span className="font-semibold text-sm">
+                            {tx.type === "deposit" ? "Dépôt" : "Retrait"} - {tx.amount.toLocaleString()} FCFA
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {format(tx.createdAt, "PPP 'à' p", { locale: fr })}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="hidden sm:inline text-xs font-mono text-muted-foreground">ID: {tx.accountId.slice(0, 8)}...</span>
+                          {getStatusBadge(tx.status)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-16 text-center text-muted-foreground">
+                    Aucune transaction trouvée. Commencez par un dépôt !
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
-          <Card className="shadow-md border-0 ring-1 ring-border">
-            <CardHeader className="flex flex-row items-center justify-between border-b bg-muted/30">
-              <div>
-                <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                  <History className="h-5 w-5 text-muted-foreground" /> Activité Récente
-                </CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
-              {transactions.length > 0 ? (
-                <div className="divide-y overflow-hidden rounded-b-xl">
-                  {transactions.map((tx) => (
-                    <div key={tx._id} className="p-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
-                      <div className="flex flex-col gap-1">
-                        <span className="font-semibold text-sm">
-                          {tx.type === "deposit" ? "Dépôt" : "Retrait"} - {tx.amount.toLocaleString()} FCFA
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {format(tx.createdAt, "PPP 'à' p", { locale: fr })}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="hidden sm:inline text-xs font-mono text-muted-foreground">ID: {tx.accountId.slice(0, 8)}...</span>
-                        {getStatusBadge(tx.status)}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="py-16 text-center text-muted-foreground">
-                  Aucune transaction trouvée. Commencez par un dépôt !
-                </div>
-              )}
-            </CardContent>
-          </Card>
         </Authenticated>
         <Unauthenticated>
           <div className="max-w-md mx-auto mt-12">

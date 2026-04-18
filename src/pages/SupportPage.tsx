@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -7,16 +7,21 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Upload, HelpCircle, Loader2, MessageSquare } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Upload, HelpCircle, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { SuccessModal } from "@/components/SuccessModal";
 export function SupportPage() {
+  const navigate = useNavigate();
   const createClaim = useMutation(api.claims.createClaim);
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const myClaims = useQuery(api.claims.getUserClaims) ?? [];
+  const user = useQuery(api.auth.loggedInUser);
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const [successData, setSuccessData] = useState<any>(null);
+  const onSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     const formData = new FormData(e.currentTarget);
@@ -35,6 +40,10 @@ export function SupportPage() {
         storageId = res.storageId;
       }
       await createClaim({ description, email, proofStorageId: storageId });
+      setSuccessData({
+        description,
+        email,
+      });
       toast.success("Votre réclamation a été soumise avec succès.");
       (e.target as HTMLFormElement).reset();
       setFile(null);
@@ -44,7 +53,7 @@ export function SupportPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [file, generateUploadUrl, createClaim]);
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="py-8 md:py-10 lg:py-12 space-y-12">
@@ -73,11 +82,11 @@ export function SupportPage() {
                   <div className="space-y-2">
                     <Label htmlFor="proof">Preuve optionnelle</Label>
                     <div className="border-2 border-dashed rounded-lg p-4 flex flex-col items-center justify-center gap-2 hover:bg-muted/50 cursor-pointer relative">
-                      <input 
-                        type="file" 
-                        id="proof" 
-                        accept="image/*" 
-                        className="absolute inset-0 opacity-0 cursor-pointer" 
+                      <input
+                        type="file"
+                        id="proof"
+                        accept="image/*"
+                        className="absolute inset-0 opacity-0 cursor-pointer"
                         onChange={(e) => setFile(e.target.files?.[0] || null)}
                         disabled={loading}
                       />
@@ -122,18 +131,16 @@ export function SupportPage() {
                 )}
               </CardContent>
             </Card>
-            <div className="p-4 bg-muted/40 rounded-xl border border-dashed flex items-start gap-3">
-              <HelpCircle className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-              <div className="space-y-1">
-                <h4 className="text-sm font-semibold">Besoin d'aide immédiate?</h4>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Notre équipe est disponible sur WhatsApp 24/7 pour les urgences liées aux transactions bloquées.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </div>
+      <SuccessModal 
+        isOpen={!!successData} 
+        onClose={() => setSuccessData(null)} 
+        type="claim"
+        data={successData || {}}
+        userEmail={user?.email}
+      />
     </div>
   );
 }
