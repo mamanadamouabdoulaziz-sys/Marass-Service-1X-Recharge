@@ -10,6 +10,13 @@ import { useNavigate } from "react-router-dom";
 import { Upload, ArrowLeft, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { SuccessModal } from "@/components/SuccessModal";
+import { Id } from "../../convex/_generated/dataModel";
+interface WithdrawSuccessData {
+  accountId: string;
+  amount: number;
+  destinationNumber: string;
+  storageId: Id<"_storage">;
+}
 export function WithdrawPage() {
   const navigate = useNavigate();
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
@@ -17,7 +24,7 @@ export function WithdrawPage() {
   const user = useQuery(api.auth.loggedInUser);
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [successData, setSuccessData] = useState<any>(null);
+  const [successData, setSuccessData] = useState<WithdrawSuccessData | null>(null);
   const onSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!file) {
@@ -36,6 +43,7 @@ export function WithdrawPage() {
         headers: { "Content-Type": file.type },
         body: file,
       });
+      if (!result.ok) throw new Error("Upload failed");
       const { storageId } = await result.json();
       await createTransaction({
         type: "withdraw",
@@ -48,6 +56,7 @@ export function WithdrawPage() {
         accountId,
         amount,
         destinationNumber,
+        storageId,
       });
       toast.success("Demande de retrait enregistrée !");
     } catch (err) {
@@ -107,9 +116,9 @@ export function WithdrawPage() {
           </Card>
         </div>
       </div>
-      <SuccessModal 
-        isOpen={!!successData} 
-        onClose={() => navigate("/")} 
+      <SuccessModal
+        isOpen={!!successData}
+        onClose={() => navigate("/")}
         type="withdraw"
         data={successData || {}}
         userEmail={user?.email}

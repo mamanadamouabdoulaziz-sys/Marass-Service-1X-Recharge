@@ -10,6 +10,12 @@ import { useNavigate } from "react-router-dom";
 import { Upload, ArrowLeft, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { SuccessModal } from "@/components/SuccessModal";
+import { Id } from "../../convex/_generated/dataModel";
+interface DepositSuccessData {
+  accountId: string;
+  amount: number;
+  storageId: Id<"_storage">;
+}
 export function DepositPage() {
   const navigate = useNavigate();
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
@@ -17,7 +23,7 @@ export function DepositPage() {
   const user = useQuery(api.auth.loggedInUser);
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [successData, setSuccessData] = useState<any>(null);
+  const [successData, setSuccessData] = useState<DepositSuccessData | null>(null);
   const onSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!file) {
@@ -35,6 +41,7 @@ export function DepositPage() {
         headers: { "Content-Type": file.type },
         body: file,
       });
+      if (!result.ok) throw new Error("Upload failed");
       const { storageId } = await result.json();
       await createTransaction({
         type: "deposit",
@@ -42,13 +49,10 @@ export function DepositPage() {
         accountId,
         proofStorageId: storageId,
       });
-      // Get public URL for the modal (using the helper mutation logic)
-      const imageUrl = await result.url; // Note: In a real app we'd query api.files.getFileUrl
-      // But for the modal display, we can use a temporary approach or wait for the store
       setSuccessData({
         accountId,
         amount,
-        imageUrl: "", // We will fetch this in the modal if needed or pass storageId
+        storageId,
       });
       toast.success("Demande de dépôt enregistrée !");
     } catch (err) {
@@ -105,9 +109,9 @@ export function DepositPage() {
           </Card>
         </div>
       </div>
-      <SuccessModal 
-        isOpen={!!successData} 
-        onClose={() => navigate("/")} 
+      <SuccessModal
+        isOpen={!!successData}
+        onClose={() => navigate("/")}
         type="deposit"
         data={successData || {}}
         userEmail={user?.email}

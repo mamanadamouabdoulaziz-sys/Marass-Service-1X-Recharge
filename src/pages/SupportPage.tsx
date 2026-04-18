@@ -12,6 +12,12 @@ import { Upload, HelpCircle, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { SuccessModal } from "@/components/SuccessModal";
+import { Id } from "../../convex/_generated/dataModel";
+interface ClaimSuccessData {
+  description: string;
+  email: string;
+  storageId?: Id<"_storage">;
+}
 export function SupportPage() {
   const navigate = useNavigate();
   const createClaim = useMutation(api.claims.createClaim);
@@ -20,7 +26,7 @@ export function SupportPage() {
   const user = useQuery(api.auth.loggedInUser);
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [successData, setSuccessData] = useState<any>(null);
+  const [successData, setSuccessData] = useState<ClaimSuccessData | null>(null);
   const onSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -28,7 +34,7 @@ export function SupportPage() {
     const description = formData.get("description") as string;
     const email = formData.get("email") as string;
     try {
-      let storageId = undefined;
+      let storageId: Id<"_storage"> | undefined = undefined;
       if (file) {
         const uploadUrl = await generateUploadUrl();
         const result = await fetch(uploadUrl, {
@@ -43,6 +49,7 @@ export function SupportPage() {
       setSuccessData({
         description,
         email,
+        storageId,
       });
       toast.success("Votre réclamation a été soumise avec succès.");
       (e.target as HTMLFormElement).reset();
@@ -109,7 +116,7 @@ export function SupportPage() {
               <CardContent className="space-y-4">
                 {myClaims.length > 0 ? (
                   myClaims.map((claim) => (
-                    <div key={claim._id} className="p-3 border rounded-md text-sm space-y-2 bg-muted/20">
+                    <div key={claim._id} className="p-3 border rounded-md text-sm space-y-2 bg-muted/20 hover:bg-muted/40 transition-colors">
                       <div className="flex justify-between items-center">
                         <span className="font-semibold">Ticket #{claim._id.slice(-6).toUpperCase()}</span>
                         <span className={`text-[10px] px-2 py-0.5 rounded-full ${
@@ -134,9 +141,9 @@ export function SupportPage() {
           </div>
         </div>
       </div>
-      <SuccessModal 
-        isOpen={!!successData} 
-        onClose={() => setSuccessData(null)} 
+      <SuccessModal
+        isOpen={!!successData}
+        onClose={() => setSuccessData(null)}
         type="claim"
         data={successData || {}}
         userEmail={user?.email}
