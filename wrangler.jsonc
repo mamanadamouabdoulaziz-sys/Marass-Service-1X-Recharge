@@ -4,7 +4,7 @@
  */
  {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "vite-reference",
+	"name": "demobet-recharge-o2l2tsn2eh_9jj2k9ljru",
 	"main": "worker/index.ts",
 	"compatibility_date": "2025-04-24",
 	"assets": {
