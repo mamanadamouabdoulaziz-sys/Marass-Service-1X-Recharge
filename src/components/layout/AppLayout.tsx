@@ -2,6 +2,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { BottomNav } from "@/components/BottomNav";
 import { AlertTriangle, Menu, MessageCircle, ShieldCheck, LogOut } from "lucide-react";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { useAuthActions } from "@convex-dev/auth/react";
@@ -44,8 +45,8 @@ export function AppLayout({ children, container = false, className, contentClass
             className="fiery-bg-layer"
           />
           <div className="fiery-scrim" />
-          <header className="sticky top-[42px] sm:top-[44px] left-0 right-0 z-[60] h-16 bg-background/40 backdrop-blur-2xl border-b border-white/5 px-4 flex items-center justify-between transition-colors duration-300">
-            <SidebarTrigger className="h-10 w-10 bg-gradient-to-r from-[#1e3a8a] to-[#3b82f6] border-l-2 border-primary text-white hover:brightness-110 transition-all rounded-xl shadow-[0_4px_15px_rgba(30,58,138,0.5)] flex items-center justify-center group">
+          <header className="sticky top-[42px] sm:top-[44px] left-0 right-0 z-[60] h-16 bg-background/60 backdrop-blur-2xl border-b border-white/5 px-4 flex items-center justify-between transition-colors duration-300">
+            <SidebarTrigger className="h-10 w-10 bg-gradient-to-r from-[#1e3a8a] to-[#3b82f6] border border-white/10 text-white hover:brightness-110 transition-all rounded-xl shadow-lg flex items-center justify-center group">
               <Menu className="h-5 w-5 group-hover:scale-110 transition-transform" />
             </SidebarTrigger>
             <div className="flex items-center gap-2 sm:gap-3">
@@ -65,7 +66,7 @@ export function AppLayout({ children, container = false, className, contentClass
               </Button>
             </div>
           </header>
-          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-transparent selection:bg-primary/30 selection:text-white pb-24 relative z-10">
+          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-transparent selection:bg-primary/30 selection:text-white pb-32 md:pb-24 relative z-10">
             {container ? (
               <div className={"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 lg:py-12" + (contentClassName ? ` ${contentClassName}` : "")}>
                 {content}
@@ -74,6 +75,7 @@ export function AppLayout({ children, container = false, className, contentClass
               content
             )}
           </main>
+          <BottomNav />
         </Authenticated>
         <Unauthenticated>
           <div className="flex-1 flex items-center justify-center p-4 bg-background relative overflow-hidden">
@@ -113,7 +115,7 @@ export function AppLayout({ children, container = false, className, contentClass
             </AnimatePresence>
           </div>
         </Unauthenticated>
-        <footer className="fixed bottom-0 left-0 right-0 z-[55] bg-[#1e3a8a]/60 backdrop-blur-2xl border-t border-white/10 px-4 py-3.5 flex items-center justify-center md:justify-between group transition-all duration-300">
+        <footer className="fixed bottom-0 md:bottom-0 left-0 right-0 z-[55] bg-[#1e3a8a]/60 backdrop-blur-2xl border-t border-white/10 px-4 py-3.5 hidden md:flex items-center justify-center md:justify-between group transition-all duration-300">
           <div className="hidden md:flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_12px_rgba(234,88,12,0.9)]" />
             <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Elite Support Actif</span>
