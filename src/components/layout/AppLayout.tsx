@@ -7,7 +7,7 @@ import { Authenticated, Unauthenticated } from "convex/react";
 import { SignInForm } from "@/components/SignInForm";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 type AppLayoutProps = {
   children?: React.ReactNode;
   container?: boolean;
@@ -16,6 +16,8 @@ type AppLayoutProps = {
 };
 export function AppLayout({ children, container = false, className, contentClassName }: AppLayoutProps): JSX.Element {
   const content = children ?? <Outlet />;
+  const { scrollY } = useScroll();
+  const backgroundY = useTransform(scrollY, [0, 1000], [0, 150]);
   return (
     <SidebarProvider defaultOpen={false}>
       <AppSidebar />
@@ -28,6 +30,12 @@ export function AppLayout({ children, container = false, className, contentClass
           </span>
         </div>
         <Authenticated>
+          {/* Fiery Bull Parallax Background */}
+          <motion.div 
+            style={{ y: backgroundY }}
+            className="fiery-bg-layer" 
+          />
+          <div className="fiery-scrim" />
           {/* Header Controls Container */}
           <header className="sticky top-[42px] sm:top-[44px] left-0 right-0 z-[60] h-16 bg-background/60 backdrop-blur-xl border-b border-white/5 px-4 flex items-center justify-between">
             <SidebarTrigger className="h-10 w-10 bg-gradient-to-r from-[#1e3a8a] to-[#3b82f6] border-l-2 border-primary text-white hover:opacity-90 transition-all rounded-xl shadow-lg flex items-center justify-center">
@@ -37,7 +45,7 @@ export function AppLayout({ children, container = false, className, contentClass
               <ThemeToggle className="" />
             </div>
           </header>
-          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background selection:bg-primary/30 selection:text-white pb-24">
+          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-transparent selection:bg-primary/30 selection:text-white pb-24 relative z-10">
             {container ? (
               <div className={"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 lg:py-12" + (contentClassName ? ` ${contentClassName}` : "")}>
                 {content}
@@ -50,7 +58,7 @@ export function AppLayout({ children, container = false, className, contentClass
         <Unauthenticated>
           <div className="flex-1 flex items-center justify-center p-4 bg-background">
             <AnimatePresence mode="wait">
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}

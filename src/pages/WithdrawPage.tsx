@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -76,14 +76,13 @@ export function WithdrawPage() {
         </Button>
         <div className="max-w-2xl mx-auto space-y-6">
           <Card className="glass-dark border-white/10 overflow-hidden rounded-3xl">
-            <CardHeader className="bg-[#1e3a8a]/20 border-b border-white/5 px-8 py-8">
-              <div className="flex items-center gap-4">
+            <CardHeader className="bg-[#1e3a8a]/20 border-b border-white/5 px-8 py-10">
+              <div className="flex items-center gap-5">
                 <div className="p-3 bg-primary/20 rounded-xl shadow-[0_0_15px_rgba(234,88,12,0.2)]">
-                  <ArrowDownToLine className="h-6 w-6 text-primary" />
+                  <ArrowDownToLine className="h-7 w-7 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl font-black text-white uppercase tracking-tighter italic leading-none">Demande de Retrait</CardTitle>
-                  <CardDescription className="text-muted-foreground/80 font-bold text-[10px] uppercase tracking-widest mt-1">Convertissez vos gains en Cash</CardDescription>
+                  <CardTitle className="text-3xl font-black text-white uppercase tracking-tight italic leading-none">Demande de Retrait</CardTitle>
                 </div>
               </div>
             </CardHeader>
@@ -91,15 +90,15 @@ export function WithdrawPage() {
               <form onSubmit={onSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="accountId" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Code de Retrait DemoBet</Label>
-                  <Input id="accountId" name="accountId" placeholder="Entrez le code généré" required disabled={loading} className="bg-white/5 border-white/10 h-12 rounded-xl" />
+                  <Input id="accountId" name="accountId" placeholder="Entrez le code généré" required disabled={loading} className="bg-white/5 border-white/10 h-12 rounded-xl focus:ring-primary focus:border-primary" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="destinationNumber" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Numéro de réception (MyNita/Wave)</Label>
-                  <Input id="destinationNumber" name="destinationNumber" type="tel" placeholder="Ex: 80 48 48 30" required disabled={loading} className="bg-white/5 border-white/10 h-12 rounded-xl" />
+                  <Input id="destinationNumber" name="destinationNumber" type="tel" placeholder="Ex: 80 48 48 30" required disabled={loading} className="bg-white/5 border-white/10 h-12 rounded-xl focus:ring-primary focus:border-primary" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="amount" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Montant (FCFA)</Label>
-                  <Input id="amount" name="amount" type="number" placeholder="10000" min="1000" required disabled={loading} className="bg-white/5 border-white/10 h-12 rounded-xl" />
+                  <Input id="amount" name="amount" type="number" placeholder="10000" min="1000" required disabled={loading} className="bg-white/5 border-white/10 h-12 rounded-xl focus:ring-primary focus:border-primary" />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Capture du code de retrait</Label>
