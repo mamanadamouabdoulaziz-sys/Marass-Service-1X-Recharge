@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Copy, MessageCircle, ExternalLink, Loader2, AlertCircle } from "lucide-react";
+import { CheckCircle, Copy, MessageCircle, ExternalLink, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
@@ -36,7 +36,7 @@ export function SuccessModal({ isOpen, onClose, type, data, userEmail }: Success
   const publicUrl = useQuery(api.files.getFileUrl,
     data.storageId ? { storageId: data.storageId } : "skip"
   );
-  const getMessage = () => {
+  const getMessage = useCallback(() => {
     const timestamp = new Date().toLocaleString("fr-FR");
     const title = type === "deposit" ? "💰 DÉPÔT" : type === "withdraw" ? "💸 RETRAIT" : "⚠️ RÉCLAMATION";
     let msg = `*${title} - DEMOBET INTERMEDIARY*\n\n`;
@@ -49,12 +49,12 @@ export function SuccessModal({ isOpen, onClose, type, data, userEmail }: Success
     msg += `👤 *Client:* ${userEmail || "Anonyme"}\n`;
     msg += `🕒 *Date:* ${timestamp}`;
     return msg;
-  };
-  const handleWhatsApp = () => {
+  }, [type, data, publicUrl, userEmail]);
+  const handleWhatsApp = useCallback(() => {
     const encoded = encodeURIComponent(getMessage());
     window.open(`https://wa.me/${adminWhatsApp}?text=${encoded}`, "_blank");
     setHasForwarded(true);
-  };
+  }, [getMessage, adminWhatsApp]);
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(getMessage());
@@ -89,7 +89,7 @@ export function SuccessModal({ isOpen, onClose, type, data, userEmail }: Success
         setCountdown(3);
       };
     }
-  }, [isOpen]);
+  }, [isOpen, handleWhatsApp]);
   const handleManualClose = () => {
     if (!hasForwarded && countdown > 0) {
       if (confirm("Veuillez envoyer le message WhatsApp pour valider votre transaction. Fermer quand même ?")) {
@@ -167,9 +167,9 @@ export function SuccessModal({ isOpen, onClose, type, data, userEmail }: Success
               >
                 <Copy className="h-4 w-4 mr-2" /> COPIER
               </Button>
-              <Button 
-                variant="ghost" 
-                className="flex-1 h-12 text-muted-foreground hover:text-white text-[10px] font-black tracking-widest uppercase" 
+              <Button
+                variant="ghost"
+                className="flex-1 h-12 text-muted-foreground hover:text-white text-[10px] font-black tracking-widest uppercase"
                 onClick={handleManualClose}
               >
                 Fermer
