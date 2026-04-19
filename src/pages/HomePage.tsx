@@ -7,21 +7,31 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { PlusCircle, ArrowDownToLine, History, User, Copy, ShieldCheck, Zap } from "lucide-react";
+import { PlusCircle, ArrowDownToLine, History, User, Copy, ShieldCheck, Zap, MessageCircle, Info } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
 export function HomePage() {
   const transactions = useQuery(api.transactions.getUserTransactions) ?? [];
   const user = useQuery(api.auth.loggedInUser);
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, createdAt: number) => {
+    const isRecent = Date.now() - createdAt < 600000; // 10 minutes
     switch (status) {
-      case "approved": 
+      case "approved":
         return <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 px-3 py-1 font-black uppercase text-[10px] tracking-widest">Approuvé</Badge>;
-      case "rejected": 
+      case "rejected":
         return <Badge variant="destructive" className="px-3 py-1 font-black uppercase text-[10px] tracking-widest shadow-lg shadow-destructive/20">Rejeté</Badge>;
-      default: 
-        return <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/30 px-3 py-1 font-black uppercase text-[10px] tracking-widest animate-pulse">En attente</Badge>;
+      default:
+        return (
+          <div className="flex flex-col items-end gap-1">
+            <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/30 px-3 py-1 font-black uppercase text-[10px] tracking-widest animate-pulse">En attente</Badge>
+            {isRecent && (
+              <span className="text-[8px] font-black text-primary uppercase tracking-tighter flex items-center gap-1">
+                <MessageCircle className="h-2 w-2" /> Validation WA requise
+              </span>
+            )}
+          </div>
+        );
     }
   };
   const copyId = (id: string) => {
@@ -39,7 +49,7 @@ export function HomePage() {
               </div>
               <h1 className="text-5xl font-black tracking-tighter text-white uppercase italic leading-none">Tableau de Bord</h1>
               <p className="text-muted-foreground flex items-center gap-3 text-sm font-medium">
-                <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                 {user?.email}
               </p>
             </div>
@@ -63,7 +73,7 @@ export function HomePage() {
                 </CardTitle>
                 <div className="hidden sm:flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-4 py-2 rounded-full border border-emerald-500/20">
                   <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
-                  Transaction Live
+                  Admin Direct : +227 80484830
                 </div>
               </CardHeader>
               <CardContent className="p-0">
@@ -85,31 +95,36 @@ export function HomePage() {
                           </span>
                         </div>
                         <div className="flex items-center gap-8">
+                          {tx.status === 'pending' && (
+                            <div className="hidden md:flex items-center gap-1.5 px-3 py-1 bg-white/5 rounded-lg border border-white/5 text-[9px] font-black text-muted-foreground uppercase">
+                              <Info className="h-3 w-3 text-primary" /> Validation Recommandée
+                            </div>
+                          )}
                           <button
                             onClick={() => copyId(tx.accountId)}
                             className="hidden lg:flex items-center gap-2 text-[10px] font-black tracking-widest text-muted-foreground hover:text-white transition-all bg-white/5 px-4 py-2 rounded-xl opacity-0 group-hover:opacity-100 border border-white/5"
                           >
                             <Copy className="h-3 w-3" /> {tx.accountId.slice(0, 16)}
                           </button>
-                          {getStatusBadge(tx.status)}
+                          {getStatusBadge(tx.status, tx.createdAt)}
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="py-32 text-center space-y-8">
+                  <div className="py-32 text-center space-y-8 px-4">
                     <div className="relative mx-auto w-24 h-24">
                       <div className="absolute inset-0 bg-primary/20 rounded-3xl blur-2xl animate-pulse" />
                       <div className="relative bg-white/5 w-24 h-24 rounded-3xl flex items-center justify-center border border-white/10 shadow-2xl">
-                        <History className="h-10 w-10 text-muted-foreground" />
+                        <MessageCircle className="h-10 w-10 text-muted-foreground" />
                       </div>
                     </div>
                     <div className="space-y-3">
-                      <p className="font-black text-3xl text-white uppercase tracking-tighter italic">Aucune Activité</p>
-                      <p className="text-sm text-muted-foreground max-w-xs mx-auto font-medium">Vos futures recharges et retraits apparaîtront ici instantanément avec un statut en temps réel.</p>
+                      <p className="font-black text-3xl text-white uppercase tracking-tighter italic">Prêt pour Validation</p>
+                      <p className="text-sm text-muted-foreground max-w-sm mx-auto font-medium">Toutes les demandes effectuées ici doivent être partagées sur WhatsApp au <span className="text-white font-bold">+227 80 48 48 30</span> pour validation immédiate.</p>
                     </div>
                     <Button asChild size="lg" variant="outline" className="border-white/10 hover:bg-white/5 text-white font-bold h-14 px-8 rounded-xl">
-                      <Link to="/deposit">FAIRE UN PREMIER DÉPÔT</Link>
+                      <Link to="/deposit">COMMENCER UN DÉPÔT</Link>
                     </Button>
                   </div>
                 )}

@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useNavigate, Link } from "react-router-dom";
-import { Upload, HelpCircle, Loader2, ArrowLeft, MessageSquare } from "lucide-react";
+import { Upload, HelpCircle, Loader2, ArrowLeft, MessageSquare, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { SuccessModal } from "@/components/SuccessModal";
@@ -47,7 +47,7 @@ export function SupportPage() {
       }
       await createClaim({ description, email, proofStorageId: storageId });
       setSuccessData({ description, email, storageId });
-      toast.success("Réclamation soumise avec succès.");
+      toast.success("Réclamation enregistrée !");
       (e.target as HTMLFormElement).reset();
       setFile(null);
     } catch (err) {
@@ -71,7 +71,7 @@ export function SupportPage() {
         <div className="text-center max-w-2xl mx-auto space-y-4">
           <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic">Centre d'Aide</h1>
           <p className="text-muted-foreground font-medium text-sm">
-            Un problème avec un dépôt ou un retrait ? Nos agents traitent vos demandes sous 24h ouvrées.
+            Un problème ? Nos agents traitent vos demandes après validation WhatsApp.
           </p>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -87,14 +87,14 @@ export function SupportPage() {
                 <form onSubmit={onSubmit} className="space-y-6">
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Adresse Email de contact</Label>
-                    <Input id="email" name="email" type="email" placeholder="votre@email.com" required disabled={loading} className="bg-white/5 border-white/10 h-12" />
+                    <Input id="email" name="email" type="email" placeholder="votre@email.com" defaultValue={user?.email || ""} required disabled={loading} className="bg-white/5 border-white/10 h-12" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="description" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Détails de l'incident</Label>
                     <Textarea id="description" name="description" placeholder="Montant, Date, ID Compte, etc..." rows={5} required disabled={loading} className="bg-white/5 border-white/10 resize-none p-4" />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Preuve optionnelle</Label>
+                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Preuve (Optionnelle)</Label>
                     <div className="border-2 border-dashed border-white/10 rounded-xl p-8 flex flex-col items-center justify-center gap-3 hover:bg-white/5 transition-all cursor-pointer relative group">
                       <input
                         type="file"
@@ -107,13 +107,21 @@ export function SupportPage() {
                       <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                         <Upload className="h-6 w-6 text-muted-foreground group-hover:text-primary" />
                       </div>
-                      <span className="text-sm font-bold text-foreground">{file ? file.name : "Cliquez pour ajouter une capture d'écran"}</span>
-                      <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">PNG, JPG ou PDF max 10MB</span>
+                      <span className="text-sm font-bold text-foreground">{file ? file.name : "Ajouter une capture d'écran"}</span>
+                      <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">JPG ou PNG max 10MB</span>
                     </div>
                   </div>
-                  <Button type="submit" className="w-full btn-gradient h-14 text-lg border-none" disabled={loading}>
-                    {loading ? <><Loader2 className="animate-spin mr-2 h-5 w-5" /> ENVOI EN COURS...</> : "SOUMETTRE MON TICKET"}
-                  </Button>
+                  <div className="space-y-4">
+                    <div className="bg-amber-500/5 border border-amber-500/20 p-4 rounded-xl flex items-start gap-3">
+                      <AlertCircle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+                      <p className="text-[11px] text-amber-500 font-bold uppercase tracking-tight leading-relaxed">
+                        Note : Après soumission, vous serez redirigé vers WhatsApp pour finaliser votre demande avec un agent.
+                      </p>
+                    </div>
+                    <Button type="submit" className="w-full btn-gradient h-14 text-lg border-none" disabled={loading}>
+                      {loading ? <><Loader2 className="animate-spin mr-2 h-5 w-5" /> ENVOI...</> : "SOUMETTRE MON TICKET"}
+                    </Button>
+                  </div>
                 </form>
               </CardContent>
             </Card>
@@ -122,7 +130,7 @@ export function SupportPage() {
             <Card className="glass-dark border-white/10 shadow-xl sticky top-24">
               <CardHeader className="border-b border-white/5 p-6">
                 <CardTitle className="text-lg font-bold text-white uppercase tracking-tight">Historique Tickets</CardTitle>
-                <CardDescription className="text-xs">Suivez le statut de vos demandes</CardDescription>
+                <CardDescription className="text-xs">Suivez vos demandes en cours</CardDescription>
               </CardHeader>
               <CardContent className="p-4 space-y-4">
                 {myClaims.length > 0 ? (
@@ -139,7 +147,7 @@ export function SupportPage() {
                       <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed italic">"{claim.description}"</p>
                       <div className="text-[10px] text-muted-foreground/60 font-bold flex justify-between pt-1">
                         <span>{format(claim.createdAt, "PPP", { locale: fr })}</span>
-                        <span className="text-primary/60">Demobet Support</span>
+                        <span className="text-primary/60">Support Actif</span>
                       </div>
                     </div>
                   ))
@@ -148,7 +156,7 @@ export function SupportPage() {
                     <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mx-auto opacity-20">
                       <MessageSquare className="h-6 w-6" />
                     </div>
-                    <p className="text-sm text-muted-foreground italic font-medium">Aucun ticket ouvert pour le moment.</p>
+                    <p className="text-sm text-muted-foreground italic font-medium">Aucun ticket ouvert.</p>
                   </div>
                 )}
               </CardContent>
