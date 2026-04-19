@@ -99,7 +99,7 @@ export function AppLayout({ children, container = false, className, contentClass
                         </div>
                       </div>
                       <div className="mt-4 flex flex-col items-center space-y-0.5">
-                        <span className="gold-teal-gradient text-sm tracking-[0.2em] uppercase leading-tight">Mararasass Service</span>
+                        <span className="gold-teal-gradient text-sm tracking-[0.2em] uppercase leading-tight">MARASS SERVICE</span>
                         <span className="text-[#FFD700] text-[10px] font-black tracking-[0.5em] uppercase leading-tight">DÉPÔT • RETRAIT</span>
                         <span className="branding-glow-blue text-2xl tracking-tighter uppercase leading-none">1XBET</span>
                       </div>
