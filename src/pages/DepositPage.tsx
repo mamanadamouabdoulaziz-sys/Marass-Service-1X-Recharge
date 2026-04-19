@@ -10,21 +10,14 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Upload, ArrowLeft, Loader2, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
-import { SuccessModal } from "@/components/SuccessModal";
-import { Id } from "../../convex/_generated/dataModel";
-interface DepositSuccessData {
-  accountId: string;
-  amount: number;
-  storageId: Id<"_storage">;
-}
 export function DepositPage() {
   const navigate = useNavigate();
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
+  const getPublicUrl = useMutation(api.files.getPublicUrl);
   const createTransaction = useMutation(api.transactions.createTransaction);
   const user = useQuery(api.auth.loggedInUser);
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [successData, setSuccessData] = useState<DepositSuccessData | null>(null);
   const onSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!file) {
@@ -50,19 +43,29 @@ export function DepositPage() {
         accountId,
         proofStorageId: storageId,
       });
-      setSuccessData({
-        accountId,
-        amount,
-        storageId,
-      });
-      toast.success("Demande de dépôt enregistrée !");
+      const publicUrl = await getPublicUrl({ storageId });
+      const message = `*DEMANDE DE DÉPÔT*\n\n` +
+        `• Type: Dépôt DemoBet\n` +
+        `• ID Compte: ${accountId}\n` +
+        `• Montant: ${amount.toLocaleString()} FCFA\n` +
+        `• Preuve: ${publicUrl || "Lien indisponible"}\n` +
+        `• Client: ${user?.email || "Anonyme"}\n` +
+        `• Date: ${new Date().toLocaleString('fr-FR')}\n\n` +
+        `_Validation automatique générée par DemoBet Intermediary_`;
+      const waUrl = `https://wa.me/22780484830?text=${encodeURIComponent(message)}`;
+      window.open(waUrl, '_blank', 'noopener,noreferrer');
+      toast.success("📱 Demande transmise à l'admin WhatsApp !");
+      if ('vibrate' in navigator) navigator.vibrate(200);
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
     } catch (err) {
       console.error(err);
       toast.error("Une erreur est survenue lors du dépôt");
     } finally {
       setLoading(false);
     }
-  }, [file, generateUploadUrl, createTransaction]);
+  }, [file, generateUploadUrl, getPublicUrl, createTransaction, user, navigate]);
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="py-8 md:py-10 lg:py-12">
@@ -116,13 +119,6 @@ export function DepositPage() {
           </Card>
         </div>
       </div>
-      <SuccessModal
-        isOpen={!!successData}
-        onClose={() => navigate("/")}
-        type="deposit"
-        data={successData || {}}
-        userEmail={user?.email}
-      />
     </div>
   );
 }

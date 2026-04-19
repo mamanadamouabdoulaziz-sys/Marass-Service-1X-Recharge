@@ -5,27 +5,18 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { Upload, ArrowLeft, Loader2, AlertTriangle } from "lucide-react";
+import { Upload, ArrowLeft, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { SuccessModal } from "@/components/SuccessModal";
-import { Id } from "../../convex/_generated/dataModel";
-interface WithdrawSuccessData {
-  accountId: string;
-  amount: number;
-  destinationNumber: string;
-  storageId: Id<"_storage">;
-}
 export function WithdrawPage() {
   const navigate = useNavigate();
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
+  const getPublicUrl = useMutation(api.files.getPublicUrl);
   const createTransaction = useMutation(api.transactions.createTransaction);
   const user = useQuery(api.auth.loggedInUser);
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [successData, setSuccessData] = useState<WithdrawSuccessData | null>(null);
   const onSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!file) {
@@ -53,20 +44,30 @@ export function WithdrawPage() {
         proofStorageId: storageId,
         destinationNumber,
       });
-      setSuccessData({
-        accountId,
-        amount,
-        destinationNumber,
-        storageId,
-      });
-      toast.success("Demande de retrait enregistrée !");
+      const publicUrl = await getPublicUrl({ storageId });
+      const message = `*DEMANDE DE RETRAIT*\n\n` +
+        `• Type: Retrait DemoBet\n` +
+        `• Code de Retrait: ${accountId}\n` +
+        `• Numéro Réception: ${destinationNumber}\n` +
+        `• Montant: ${amount.toLocaleString()} FCFA\n` +
+        `• Preuve: ${publicUrl || "Lien indisponible"}\n` +
+        `• Client: ${user?.email || "Anonyme"}\n` +
+        `• Date: ${new Date().toLocaleString('fr-FR')}\n\n` +
+        `_Validation automatique générée par DemoBet Intermediary_`;
+      const waUrl = `https://wa.me/22780484830?text=${encodeURIComponent(message)}`;
+      window.open(waUrl, '_blank', 'noopener,noreferrer');
+      toast.success("📱 Demande transmise à l'admin WhatsApp !");
+      if ('vibrate' in navigator) navigator.vibrate(200);
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
     } catch (err) {
       console.error(err);
       toast.error("Une erreur est survenue lors du retrait");
     } finally {
       setLoading(false);
     }
-  }, [file, generateUploadUrl, createTransaction]);
+  }, [file, generateUploadUrl, getPublicUrl, createTransaction, user, navigate]);
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="py-8 md:py-10 lg:py-12">
@@ -74,12 +75,6 @@ export function WithdrawPage() {
           <Link to="/"><ArrowLeft className="mr-2 h-4 w-4" /> Retour au tableau de bord</Link>
         </Button>
         <div className="max-w-2xl mx-auto space-y-6">
-          <Alert variant="destructive" className="bg-destructive/20 border-destructive animate-pulse shadow-lg">
-            <AlertTriangle className="h-5 w-5" />
-            <AlertDescription className="text-sm font-bold leading-relaxed">
-              SVP Effectuer un Compte à Compte <span className="underline">MyNita, Amanata ou Wave</span> au <span className="text-lg">80 48 48 30</span> avant d'envoyer la Demande.
-            </AlertDescription>
-          </Alert>
           <Card className="glass-dark border-white/10">
             <CardHeader className="bg-destructive/10 border-b border-white/5">
               <CardTitle className="text-2xl font-bold text-white">Demande de Retrait</CardTitle>
@@ -123,13 +118,6 @@ export function WithdrawPage() {
           </Card>
         </div>
       </div>
-      <SuccessModal
-        isOpen={!!successData}
-        onClose={() => navigate("/")}
-        type="withdraw"
-        data={successData || {}}
-        userEmail={user?.email}
-      />
     </div>
   );
 }

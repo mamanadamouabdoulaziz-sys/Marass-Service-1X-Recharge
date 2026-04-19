@@ -11,22 +11,15 @@ import { useNavigate, Link } from "react-router-dom";
 import { Upload, HelpCircle, Loader2, ArrowLeft, MessageSquare, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { SuccessModal } from "@/components/SuccessModal";
-import { Id } from "../../convex/_generated/dataModel";
-interface ClaimSuccessData {
-  description: string;
-  email: string;
-  storageId?: Id<"_storage">;
-}
 export function SupportPage() {
   const navigate = useNavigate();
   const createClaim = useMutation(api.claims.createClaim);
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
+  const getPublicUrl = useMutation(api.files.getPublicUrl);
   const myClaims = useQuery(api.claims.getUserClaims) ?? [];
   const user = useQuery(api.auth.loggedInUser);
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [successData, setSuccessData] = useState<ClaimSuccessData | null>(null);
   const onSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -34,7 +27,8 @@ export function SupportPage() {
     const description = formData.get("description") as string;
     const email = formData.get("email") as string;
     try {
-      let storageId: Id<"_storage"> | undefined = undefined;
+      let storageId: string | undefined = undefined;
+      let publicUrl: string | null = null;
       if (file) {
         const uploadUrl = await generateUploadUrl();
         const result = await fetch(uploadUrl, {
@@ -44,19 +38,30 @@ export function SupportPage() {
         });
         const res = await result.json();
         storageId = res.storageId;
+        publicUrl = await getPublicUrl({ storageId: storageId as any });
       }
-      await createClaim({ description, email, proofStorageId: storageId });
-      setSuccessData({ description, email, storageId });
-      toast.success("Réclamation enregistrée !");
-      (e.target as HTMLFormElement).reset();
-      setFile(null);
+      await createClaim({ description, email, proofStorageId: storageId as any });
+      const message = `*RÉCLAMATION SUPPORT*\n\n` +
+        `• Email Contact: ${email}\n` +
+        `• Description: ${description}\n` +
+        `• Preuve: ${publicUrl || "Aucune preuve jointe"}\n` +
+        `• Utilisateur: ${user?.email || "Anonyme"}\n` +
+        `• Date: ${new Date().toLocaleString('fr-FR')}\n\n` +
+        `_Validation automatique générée par DemoBet Intermediary_`;
+      const waUrl = `https://wa.me/22780484830?text=${encodeURIComponent(message)}`;
+      window.open(waUrl, '_blank', 'noopener,noreferrer');
+      toast.success("📱 Ticket transmis à l'admin WhatsApp !");
+      if ('vibrate' in navigator) navigator.vibrate(200);
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
     } catch (err) {
       console.error(err);
       toast.error("Erreur lors de la soumission");
     } finally {
       setLoading(false);
     }
-  }, [file, generateUploadUrl, createClaim]);
+  }, [file, generateUploadUrl, getPublicUrl, createClaim, user, navigate]);
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="py-8 md:py-10 lg:py-12 space-y-10">
@@ -71,7 +76,7 @@ export function SupportPage() {
         <div className="text-center max-w-2xl mx-auto space-y-4">
           <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic">Centre d'Aide</h1>
           <p className="text-muted-foreground font-medium text-sm">
-            Un problème ? Nos agents traitent vos demandes après validation WhatsApp.
+            Un problème ? Nos agents traitent vos demandes après validation WhatsApp automatique.
           </p>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -115,7 +120,7 @@ export function SupportPage() {
                     <div className="bg-amber-500/5 border border-amber-500/20 p-4 rounded-xl flex items-start gap-3">
                       <AlertCircle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
                       <p className="text-[11px] text-amber-500 font-bold uppercase tracking-tight leading-relaxed">
-                        Note : Après soumission, vous serez redirigé vers WhatsApp pour finaliser votre demande avec un agent.
+                        Note : Après soumission, une fenêtre WhatsApp s'ouvrira automatiquement pour finaliser votre demande.
                       </p>
                     </div>
                     <Button type="submit" className="w-full btn-gradient h-14 text-lg border-none" disabled={loading}>
@@ -164,13 +169,6 @@ export function SupportPage() {
           </div>
         </div>
       </div>
-      <SuccessModal
-        isOpen={!!successData}
-        onClose={() => setSuccessData(null)}
-        type="claim"
-        data={successData || {}}
-        userEmail={user?.email}
-      />
     </div>
   );
 }

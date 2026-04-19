@@ -11,6 +11,13 @@ export const generateUploadUrl = mutation({
     return await ctx.storage.generateUploadUrl();
   },
 });
+export const getPublicUrl = mutation({
+  args: { storageId: v.id("_storage") },
+  handler: async (ctx, args) => {
+    const url = await ctx.storage.getUrl(args.storageId);
+    return url;
+  },
+});
 export const saveFileMetadata = mutation({
   args: {
     storageId: v.id("_storage"),
@@ -63,8 +70,6 @@ export const listFiles = query({
 export const getFileUrl = query({
   args: { storageId: v.id("_storage") },
   handler: async (ctx, args) => {
-    // Basic safety: just return URL if storageId is provided
-    // Metadata propagation can take time, but getUrl works directly on storageId
     try {
       return await ctx.storage.getUrl(args.storageId);
     } catch (e) {
