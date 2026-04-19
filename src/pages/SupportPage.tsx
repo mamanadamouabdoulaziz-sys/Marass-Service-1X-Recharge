@@ -27,7 +27,7 @@ export function SupportPage() {
     const description = formData.get("description") as string;
     const email = formData.get("email") as string;
     try {
-      let storageId: string | undefined = undefined;
+      let storageId: any = undefined;
       let publicUrl: string | null = null;
       if (file) {
         const uploadUrl = await generateUploadUrl();
@@ -38,9 +38,13 @@ export function SupportPage() {
         });
         const res = await result.json();
         storageId = res.storageId;
-        publicUrl = await getPublicUrl({ storageId: storageId as any });
+        publicUrl = await getPublicUrl({ storageId });
       }
-      await createClaim({ description, email, proofStorageId: storageId as any });
+      await createClaim({ 
+        description, 
+        email, 
+        proofStorageId: storageId 
+      });
       const message = `*RÉCLAMATION SUPPORT*\n\n` +
         `• Email Contact: ${email}\n` +
         `• Description: ${description}\n` +
@@ -57,7 +61,7 @@ export function SupportPage() {
       }, 1500);
     } catch (err) {
       console.error(err);
-      toast.error("Erreur lors de la soumission");
+      toast.error("Erreur lors de la soumission de votre ticket");
     } finally {
       setLoading(false);
     }
@@ -69,7 +73,7 @@ export function SupportPage() {
           <Button asChild variant="ghost" className="hover:bg-white/5 text-muted-foreground hover:text-white">
             <Link to="/"><ArrowLeft className="mr-2 h-4 w-4" /> Retour</Link>
           </Button>
-          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-4 py-1.5 rounded-full border border-primary/20">
+          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-4 py-1.5 rounded-full border border-primary/20 animate-pulse">
             <MessageSquare className="h-3 w-3" /> Support Prioritaire
           </div>
         </div>
@@ -91,7 +95,7 @@ export function SupportPage() {
               <CardContent className="p-8">
                 <form onSubmit={onSubmit} className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Adresse Email de contact</Label>
+                    <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Email de contact</Label>
                     <Input id="email" name="email" type="email" placeholder="votre@email.com" defaultValue={user?.email || ""} required disabled={loading} className="bg-white/5 border-white/10 h-12" />
                   </div>
                   <div className="space-y-2">
@@ -120,7 +124,7 @@ export function SupportPage() {
                     <div className="bg-amber-500/5 border border-amber-500/20 p-4 rounded-xl flex items-start gap-3">
                       <AlertCircle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
                       <p className="text-[11px] text-amber-500 font-bold uppercase tracking-tight leading-relaxed">
-                        Note : Après soumission, une fenêtre WhatsApp s'ouvrira automatiquement pour finaliser votre demande.
+                        Note : Une fenêtre WhatsApp s'ouvrira pour finaliser le ticket après soumission.
                       </p>
                     </div>
                     <Button type="submit" className="w-full btn-gradient h-14 text-lg border-none" disabled={loading}>
@@ -134,15 +138,15 @@ export function SupportPage() {
           <div className="space-y-6">
             <Card className="glass-dark border-white/10 shadow-xl sticky top-24">
               <CardHeader className="border-b border-white/5 p-6">
-                <CardTitle className="text-lg font-bold text-white uppercase tracking-tight">Historique Tickets</CardTitle>
-                <CardDescription className="text-xs">Suivez vos demandes en cours</CardDescription>
+                <CardTitle className="text-lg font-bold text-white uppercase tracking-tight">Vos Tickets</CardTitle>
+                <CardDescription className="text-xs">Historique des demandes</CardDescription>
               </CardHeader>
               <CardContent className="p-4 space-y-4">
                 {myClaims.length > 0 ? (
                   myClaims.map((claim) => (
                     <div key={claim._id} className="p-4 bg-white/5 border border-white/5 rounded-xl space-y-3 hover:bg-white/10 transition-all duration-300">
                       <div className="flex justify-between items-start">
-                        <span className="font-black text-xs text-white">#TICKET-{claim._id.slice(-6).toUpperCase()}</span>
+                        <span className="font-black text-xs text-white">#ID-{claim._id.slice(-6).toUpperCase()}</span>
                         <span className={`text-[9px] px-2.5 py-1 rounded-full font-black uppercase tracking-widest ${
                           claim.status === "pending" ? "bg-amber-500/10 text-amber-500 border border-amber-500/20" : "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
                         }`}>
@@ -152,7 +156,7 @@ export function SupportPage() {
                       <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed italic">"{claim.description}"</p>
                       <div className="text-[10px] text-muted-foreground/60 font-bold flex justify-between pt-1">
                         <span>{format(claim.createdAt, "PPP", { locale: fr })}</span>
-                        <span className="text-primary/60">Support Actif</span>
+                        <span className="text-primary/60">Actif</span>
                       </div>
                     </div>
                   ))
