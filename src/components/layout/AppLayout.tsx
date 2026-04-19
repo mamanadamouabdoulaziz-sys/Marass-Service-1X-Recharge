@@ -2,12 +2,15 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { AlertTriangle, Menu, MessageCircle, ShieldCheck } from "lucide-react";
+import { AlertTriangle, Menu, MessageCircle, ShieldCheck, LogOut } from "lucide-react";
 import { Authenticated, Unauthenticated } from "convex/react";
+import { useAuthActions } from "@convex-dev/auth/react";
 import { SignInForm } from "@/components/SignInForm";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { toast } from "sonner";
 type AppLayoutProps = {
   children?: React.ReactNode;
   container?: boolean;
@@ -18,6 +21,12 @@ export function AppLayout({ children, container = false, className, contentClass
   const content = children ?? <Outlet />;
   const { scrollY } = useScroll();
   const backgroundY = useTransform(scrollY, [0, 1000], [0, 150]);
+  const { signOut } = useAuthActions();
+  const handleSignOut = () => {
+    if ("vibrate" in navigator) navigator.vibrate(50);
+    void signOut();
+    toast.success("Session fermée avec succès.");
+  };
   return (
     <SidebarProvider defaultOpen={false}>
       <AppSidebar />
@@ -39,12 +48,21 @@ export function AppLayout({ children, container = false, className, contentClass
             <SidebarTrigger className="h-10 w-10 bg-gradient-to-r from-[#1e3a8a] to-[#3b82f6] border-l-2 border-primary text-white hover:brightness-110 transition-all rounded-xl shadow-[0_4px_15px_rgba(30,58,138,0.5)] flex items-center justify-center group">
               <Menu className="h-5 w-5 group-hover:scale-110 transition-transform" />
             </SidebarTrigger>
-            <div className="flex items-center gap-3">
-              <div className="hidden sm:flex items-center gap-2 px-4 py-1.5 bg-white/5 rounded-full border border-white/10">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="hidden sm:flex items-center gap-2 px-4 py-1.5 bg-white/5 rounded-full border border-white/10 mr-1">
                 <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="text-[9px] font-black text-white/70 uppercase tracking-widest">Serveur Sécurisé</span>
               </div>
               <ThemeToggle className="hover:shadow-[0_0_15px_rgba(234,88,12,0.3)]" />
+              <Button
+                onClick={handleSignOut}
+                variant="ghost"
+                size="icon"
+                aria-label="Se déconnecter"
+                className="h-10 w-10 bg-[#1e3a8a]/40 border border-white/10 rounded-xl transition-all duration-200 hover:bg-destructive/20 hover:border-destructive/40 active:scale-90"
+              >
+                <LogOut className="h-5 w-5 text-white/80" />
+              </Button>
             </div>
           </header>
           <main className="flex-1 overflow-x-hidden overflow-y-auto bg-transparent selection:bg-primary/30 selection:text-white pb-24 relative z-10">

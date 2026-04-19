@@ -1,6 +1,8 @@
 import React from "react";
-import { Home, PlusCircle, ArrowDownToLine, MessageSquareWarning, ShieldCheck } from "lucide-react";
+import { Home, PlusCircle, ArrowDownToLine, MessageSquareWarning, ShieldCheck, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { toast } from "sonner";
 import {
   Sidebar,
   SidebarContent,
@@ -11,6 +13,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
 const navItems = [
   { label: "Tableau de bord", path: "/", icon: Home },
   { label: "Dépôt", path: "/deposit", icon: PlusCircle },
@@ -19,6 +22,12 @@ const navItems = [
 ];
 export function AppSidebar(): JSX.Element {
   const { pathname } = useLocation();
+  const { signOut } = useAuthActions();
+  const handleSignOut = () => {
+    if ("vibrate" in navigator) navigator.vibrate(50);
+    void signOut();
+    toast.success("Déconnexion réussie !");
+  };
   return (
     <Sidebar className="border-r border-white/5 bg-[#1e3a8a]/10">
       <SidebarHeader className="border-b border-white/5 px-4 py-8 bg-[#1e3a8a]/20">
@@ -56,7 +65,14 @@ export function AppSidebar(): JSX.Element {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t border-white/5 p-6 bg-[#1e3a8a]/10">
+      <SidebarFooter className="border-t border-white/5 p-6 bg-[#1e3a8a]/10 space-y-4">
+        <Button 
+          onClick={handleSignOut}
+          className="w-full btn-orange h-12 rounded-xl group relative overflow-hidden"
+        >
+          <LogOut className="mr-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+          <span className="font-black uppercase tracking-widest text-[11px]">Déconnexion</span>
+        </Button>
         <div className="glass-dark rounded-lg p-3 text-center border-white/5">
           <div className="text-[10px] text-muted-foreground uppercase font-black tracking-widest opacity-60">
             Secure Navy System v3.0
