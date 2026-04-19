@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +12,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Upload, HelpCircle, Loader2, ArrowLeft, MessageSquare, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+const MAX_DESC = 1000;
 export function SupportPage() {
   const navigate = useNavigate();
   const createClaim = useMutation(api.claims.createClaim);
@@ -20,14 +22,15 @@ export function SupportPage() {
   const user = useQuery(api.auth.loggedInUser);
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [descLength, setDescLength] = useState(0);
   const onSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     const formData = new FormData(e.currentTarget);
-    const description = formData.get("description") as string;
+    const description = (formData.get("description") as string)?.trim() || "Aucune description fournie";
     const email = formData.get("email") as string;
     try {
-      let storageId: any = undefined;
+      let storageId: Id<"_storage"> | undefined = undefined;
       let publicUrl: string | null = null;
       if (file) {
         const uploadUrl = await generateUploadUrl();
@@ -37,7 +40,7 @@ export function SupportPage() {
           body: file,
         });
         const res = await result.json();
-        storageId = res.storageId;
+        storageId = res.storageId as Id<"_storage">;
         publicUrl = await getPublicUrl({ storageId });
       }
       await createClaim({
@@ -55,7 +58,6 @@ export function SupportPage() {
       const waUrl = `https://wa.me/22780484830?text=${encodeURIComponent(message)}`;
       window.open(waUrl, '_blank', 'noopener,noreferrer');
       toast.success("📱 Ticket transmis à l'admin WhatsApp !");
-      if ('vibrate' in navigator) navigator.vibrate(200);
       setTimeout(() => {
         navigate("/");
       }, 1500);
@@ -78,7 +80,7 @@ export function SupportPage() {
           </div>
         </div>
         <div className="text-center max-w-2xl mx-auto space-y-4">
-          <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic drop-shadow-2xl">Centre d'Aide Elite</h1>
+          <h1 className="text-3xl sm:text-4xl font-black tracking-tighter text-white uppercase italic drop-shadow-2xl">Centre d'Aide Elite</h1>
           <p className="text-muted-foreground font-medium text-sm">
             Validation WhatsApp automatique pour un traitement en moins de 15 minutes.
           </p>
@@ -99,8 +101,23 @@ export function SupportPage() {
                     <Input id="email" name="email" type="email" placeholder="votre@email.com" defaultValue={user?.email || ""} required disabled={loading} className="bg-white/5 border-white/10 h-12 rounded-xl" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Détails de l'incident</Label>
-                    <Textarea id="description" name="description" placeholder="Expliquez votre problème ici..." rows={5} required disabled={loading} className="bg-white/5 border-white/10 resize-none p-4 rounded-xl" />
+                    <div className="flex justify-between items-end">
+                      <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Détails de l'incident</Label>
+                      <span className={`text-[10px] font-bold ${descLength > MAX_DESC ? 'text-destructive' : 'text-muted-foreground'}`}>
+                        {descLength}/{MAX_DESC}
+                      </span>
+                    </div>
+                    <Textarea 
+                      id="description" 
+                      name="description" 
+                      placeholder="Expliquez votre problème ici..." 
+                      rows={5} 
+                      required 
+                      disabled={loading} 
+                      maxLength={MAX_DESC}
+                      onChange={(e) => setDescLength(e.target.value.length)}
+                      className="bg-white/5 border-white/10 resize-none p-4 rounded-xl" 
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Preuve (Optionnelle)</Label>
@@ -149,7 +166,7 @@ export function SupportPage() {
                         <span className={`text-[9px] px-2.5 py-1 rounded-full font-black uppercase tracking-widest ${
                           claim.status === "pending" ? "bg-primary/10 text-primary border border-primary/20" : "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
                         }`}>
-                          {claim.status === "pending" ? "En attente" : "Résolu"}
+                          {claim.status === "pending" ? "En attente" : claim.status === "resolved" ? "Résolu" : "Rejeté"}
                         </span>
                       </div>
                       <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed italic font-medium">"{claim.description}"</p>
@@ -160,11 +177,14 @@ export function SupportPage() {
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-16 px-4 space-y-4">
-                    <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mx-auto opacity-20">
-                      <MessageSquare className="h-6 w-6 text-primary" />
+                  <div className="text-center py-24 px-4 space-y-6">
+                    <div className="relative mx-auto w-16 h-16">
+                      <div className="absolute inset-0 bg-primary/10 rounded-2xl blur-lg" />
+                      <div className="relative w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+                        <MessageSquare className="h-8 w-8 text-muted-foreground/30" />
+                      </div>
                     </div>
-                    <p className="text-sm text-muted-foreground italic font-medium uppercase tracking-tighter">Aucun ticket ouvert</p>
+                    <p className="text-xs text-muted-foreground italic font-medium uppercase tracking-widest">Aucun ticket ouvert</p>
                   </div>
                 )}
               </CardContent>

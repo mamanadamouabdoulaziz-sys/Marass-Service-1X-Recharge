@@ -9,6 +9,7 @@ import { PlusCircle, ArrowDownToLine, History, Copy, Zap, MessageCircle, CheckCi
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 export function HomePage() {
   const transactions = useQuery(api.transactions.getUserTransactions) ?? [];
   const user = useQuery(api.auth.loggedInUser);
@@ -35,13 +36,17 @@ export function HomePage() {
   };
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="py-8 md:py-10 lg:py-12 space-y-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-10">
+      <div className="py-8 md:py-10 lg:py-12 space-y-10 scroll-mt-[80px]">
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-10"
+        >
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.3em] text-xs">
               <Zap className="h-3 w-3 fill-current" /> Système Navy Elite
             </div>
-            <h1 className="text-5xl font-black tracking-tighter text-white uppercase italic leading-none drop-shadow-2xl">Tableau de Bord</h1>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-white uppercase italic leading-none drop-shadow-2xl">Tableau de Bord</h1>
             <p className="text-muted-foreground flex items-center gap-3 text-sm font-medium">
               <span className="h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_rgba(234,88,12,0.5)]" />
               {user?.email ?? "Chargement..."}
@@ -55,10 +60,10 @@ export function HomePage() {
               <Link to="/withdraw"><ArrowDownToLine className="mr-2 h-5 w-5" /> RETRAIT</Link>
             </Button>
           </div>
-        </div>
+        </motion.div>
         <div className="grid grid-cols-1 gap-8">
-          <Card className="glass-dark border-white/10 overflow-hidden shadow-2xl rounded-3xl">
-            <CardHeader className="flex flex-row items-center justify-between border-b border-white/5 bg-white/[0.03] px-8 py-6">
+          <Card className="glass-dark border-white/10 overflow-hidden shadow-2xl rounded-3xl navy-glow">
+            <CardHeader className="flex flex-row items-center justify-between border-b border-white/5 bg-white/[0.03] px-6 sm:px-8 py-6">
               <CardTitle className="text-lg font-black uppercase tracking-tight flex items-center gap-4 text-white">
                 <div className="p-2 bg-primary/10 rounded-lg">
                   <History className="h-5 w-5 text-primary" />
@@ -73,8 +78,14 @@ export function HomePage() {
             <CardContent className="p-0">
               {transactions.length > 0 ? (
                 <div className="divide-y divide-white/5">
-                  {transactions.map((tx) => (
-                    <div key={tx._id} className="px-8 py-6 flex items-center justify-between hover:bg-white/[0.03] transition-all duration-300 group">
+                  {transactions.map((tx, idx) => (
+                    <motion.div 
+                      key={tx._id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.05 }}
+                      className="px-6 sm:px-8 py-6 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-white/[0.03] transition-all duration-300 group gap-4"
+                    >
                       <div className="flex flex-col gap-2">
                         <span className="font-black text-lg flex items-center gap-3 text-white tracking-tight">
                           {tx.type === "deposit" ? (
@@ -88,25 +99,25 @@ export function HomePage() {
                           {format(tx.createdAt, "PPP 'à' p", { locale: fr })}
                         </span>
                       </div>
-                      <div className="flex items-center gap-8">
+                      <div className="flex items-center justify-between sm:justify-end gap-4 sm:gap-8">
                         {tx.status === 'pending' && (
-                          <div className="hidden md:flex items-center gap-1.5 px-3 py-1 bg-primary/5 rounded-lg border border-primary/10 text-[9px] font-black text-primary uppercase">
-                            <CheckCircle2 className="h-3 w-3" /> Transmis via WhatsApp
+                          <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 bg-primary/5 rounded-lg border border-primary/10 text-[9px] font-black text-primary uppercase">
+                            <CheckCircle2 className="h-3 w-3" /> Transmis
                           </div>
                         )}
                         <button
                           onClick={() => copyId(tx.accountId)}
-                          className="hidden lg:flex items-center gap-2 text-[10px] font-black tracking-widest text-muted-foreground hover:text-white transition-all bg-white/5 px-4 py-2 rounded-xl opacity-0 group-hover:opacity-100 border border-white/5"
+                          className="hidden md:flex items-center gap-2 text-[10px] font-black tracking-widest text-muted-foreground hover:text-white transition-all bg-white/5 px-4 py-2 rounded-xl opacity-0 group-hover:opacity-100 border border-white/5"
                         >
                           <Copy className="h-3 w-3" /> {tx.accountId.slice(0, 16)}
                         </button>
                         {getStatusBadge(tx.status)}
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               ) : (
-                <div className="py-32 text-center space-y-8 px-4 bg-[#1e3a8a]/5">
+                <div className="py-32 text-center space-y-8 px-4 bg-gradient-to-b from-[#1e3a8a]/10 to-transparent">
                   <div className="relative mx-auto w-24 h-24">
                     <div className="absolute inset-0 bg-primary/20 rounded-3xl blur-2xl animate-pulse" />
                     <div className="relative bg-white/5 w-24 h-24 rounded-3xl flex items-center justify-center border border-white/10 shadow-2xl">
@@ -114,7 +125,7 @@ export function HomePage() {
                     </div>
                   </div>
                   <div className="space-y-3">
-                    <p className="font-black text-3xl text-white uppercase tracking-tighter italic">Protocole Navy Elite</p>
+                    <p className="font-black text-2xl sm:text-3xl text-white uppercase tracking-tighter italic">Protocole Navy Elite</p>
                     <p className="text-sm text-muted-foreground max-w-sm mx-auto font-medium">Toutes vos demandes sont sécurisées et transmises automatiquement pour validation immédiate.</p>
                   </div>
                   <Button asChild size="lg" variant="outline" className="border-white/10 hover:bg-white/5 text-white font-bold h-14 px-8 rounded-xl">

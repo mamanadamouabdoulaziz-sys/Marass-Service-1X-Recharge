@@ -34,7 +34,6 @@
     --sidebar-ring: 25 100% 50%;
   }
   .dark {
-    /* Synced for Elite Dark Theme */
     --background: 217 44% 12%;
     --foreground: 0 0% 98%;
     --primary: 25 100% 50%;
@@ -43,9 +42,12 @@
     @apply border-border;
   }
   html {
-    @apply bg-background text-foreground;
-    scroll-behavior: smooth;
+    @apply bg-background text-foreground scroll-smooth;
     -webkit-font-smoothing: antialiased;
+  }
+  /* Custom selection */
+  ::selection {
+    @apply bg-primary/30 text-white;
   }
 }
 @layer components {
@@ -72,6 +74,12 @@
     @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl;
   }
   .glass-dark {
-    @apply bg-[#1e3a8a]/20 backdrop-blur-xl border border-white/10 shadow-2xl;
+    @apply bg-[#1e3a8a]/20 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-blue-900/20;
+  }
+  .navy-glow {
+    @apply relative after:absolute after:inset-0 after:-z-10 after:bg-blue-600/5 after:blur-3xl after:rounded-full;
+  }
+  .scroll-mt-fixed {
+    scroll-margin-top: 100px;
   }
 }
