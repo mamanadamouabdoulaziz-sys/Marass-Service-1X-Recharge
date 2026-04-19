@@ -89,6 +89,28 @@
     background: radial-gradient(circle at 50% 50%, transparent 0%, rgba(3, 7, 18, 0.95) 100%),
                 linear-gradient(to bottom, rgba(30, 58, 138, 0.1) 0%, rgba(3, 7, 18, 0.8) 100%);
   }
+  /* Mararasass Service Branding Classes */
+  .login-logo-hex {
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%);
+  }
+  .hexagon-border-glow {
+    @apply relative flex items-center justify-center;
+  }
+  .hexagon-border-glow::before {
+    content: '';
+    @apply absolute -inset-1 z-0 opacity-50 blur-md;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    background: #FFD700;
+  }
+  .gold-teal-gradient {
+    @apply bg-clip-text text-transparent font-black;
+    background-image: linear-gradient(to right, #FFD700, #2DD4BF);
+  }
+  .branding-glow-blue {
+    @apply text-[#3b82f6] font-black italic;
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.8));
+  }
   /* Micro-interactions & Animations */
   @keyframes pulse-orange {
     0%, 100% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.4); }

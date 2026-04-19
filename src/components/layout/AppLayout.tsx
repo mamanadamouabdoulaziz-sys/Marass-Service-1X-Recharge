@@ -72,8 +72,19 @@ export function AppLayout({ children, container = false, className, contentClass
                 <Card className="glass-dark border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.6)] relative overflow-hidden rounded-[2rem]">
                   <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary via-orange-400 to-primary animate-shimmer" />
                   <CardHeader className="text-center pb-6 pt-10">
-                    <div className="mx-auto w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 border border-primary/20 shadow-inner group">
-                      <ShieldCheck className="h-8 w-8 text-primary group-hover:scale-110 transition-transform duration-500" />
+                    <div className="mx-auto mb-6 flex flex-col items-center">
+                      <div className="w-24 h-24 rounded-full bg-black/40 flex items-center justify-center p-4 border border-white/5 shadow-2xl relative">
+                        <div className="hexagon-border-glow w-full h-full">
+                          <div className="login-logo-hex w-full h-full flex items-center justify-center relative z-10 shadow-inner">
+                            <span className="text-white text-5xl font-black italic drop-shadow-lg">S</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-4 flex flex-col items-center space-y-0.5">
+                        <span className="gold-teal-gradient text-sm tracking-[0.2em] uppercase leading-tight">Mararasass Service</span>
+                        <span className="text-[#FFD700] text-[10px] font-black tracking-[0.4em] uppercase leading-tight">DÉPÔT • RETRAIT</span>
+                        <span className="branding-glow-blue text-2xl tracking-tighter uppercase leading-none">1XBET</span>
+                      </div>
                     </div>
                     <CardTitle className="text-3xl font-black text-white uppercase tracking-tighter italic leading-tight">Accès Sécurisé</CardTitle>
                     <CardDescription className="text-muted-foreground font-bold uppercase text-[10px] tracking-[0.2em] mt-2 italic">Validation Elite Reclame</CardDescription>
