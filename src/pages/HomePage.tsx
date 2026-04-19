@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { PlusCircle, ArrowDownToLine, History, Copy, Zap, MessageCircle, CheckCircle2, ChevronRight } from "lucide-react";
+import { PlusCircle, ArrowDownToLine, History, Copy, Zap, ShieldCheck, CheckCircle2, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
@@ -16,21 +16,32 @@ export function HomePage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "approved":
-        return <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 px-3 py-1 font-black uppercase text-[10px] tracking-widest shadow-[0_0_10px_rgba(16,185,129,0.1)]">Approuvé</Badge>;
+        return (
+          <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 px-3 py-1 font-black uppercase text-[10px] tracking-widest shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+            Approuvé
+          </Badge>
+        );
       case "rejected":
-        return <Badge variant="destructive" className="px-3 py-1 font-black uppercase text-[10px] tracking-widest shadow-lg shadow-destructive/20">Rejeté</Badge>;
+        return (
+          <Badge variant="destructive" className="px-3 py-1 font-black uppercase text-[10px] tracking-widest shadow-lg shadow-destructive/20">
+            Rejeté
+          </Badge>
+        );
       default:
         return (
           <div className="flex flex-col items-end gap-1.5">
-            <Badge className="bg-primary/10 text-primary border-primary/30 px-3 py-1 font-black uppercase text-[10px] tracking-widest animate-pulse border-dashed">En attente</Badge>
-            <span className="text-[8px] font-black text-emerald-400 uppercase tracking-tighter flex items-center gap-1 bg-emerald-500/5 px-2 py-0.5 rounded-sm border border-emerald-500/10 transition-colors hover:bg-emerald-500/10">
-              <CheckCircle2 className="h-2 w-2" /> Transmission WhatsApp
+            <Badge className="bg-primary/10 text-primary border-primary/30 px-3 py-1 font-black uppercase text-[10px] tracking-widest animate-pulse border-dashed">
+              En attente
+            </Badge>
+            <span className="text-[8px] font-black text-emerald-400 uppercase tracking-tighter flex items-center gap-1 bg-emerald-500/5 px-2.5 py-1 rounded-md border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)] transition-all hover:bg-emerald-500/10">
+              <ShieldCheck className="h-2.5 w-2.5 fill-emerald-400/20" /> WhatsApp Vérifié
             </span>
           </div>
         );
     }
   };
   const copyId = (id: string) => {
+    if ("vibrate" in navigator) navigator.vibrate(30);
     navigator.clipboard.writeText(id);
     toast.success("Référence copiée !");
   };
@@ -40,7 +51,7 @@ export function HomePage() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
           className="flex flex-col md:flex-row md:items-end justify-between gap-8 md:gap-12"
         >
           <div className="space-y-4">
@@ -48,8 +59,10 @@ export function HomePage() {
               <div className="h-1 w-8 bg-primary/30 rounded-full" />
               <Zap className="h-3.3 w-3.3 fill-current animate-pulse" /> Système Navy Elite v3.5
             </div>
-            <h1 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tighter text-white uppercase italic leading-[0.85] drop-shadow-2xl">BIENVENUE</h1>
-            <p className="text-muted-foreground/60 flex items-center gap-3 text-xs sm:text-sm font-bold uppercase tracking-widest bg-white/5 w-fit px-4 py-1.5 rounded-full border border-white/5">
+            <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white uppercase italic leading-[0.8] drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+              BIENVENUE
+            </h1>
+            <p className="text-muted-foreground/60 flex items-center gap-3 text-xs sm:text-sm font-bold uppercase tracking-widest bg-white/5 w-fit px-4 py-1.5 rounded-full border border-white/5 backdrop-blur-md">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
               {user?.email ?? "Session Sécurisée"}
             </p>
@@ -85,7 +98,7 @@ export function HomePage() {
                       key={tx._id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: idx * 0.05 }}
+                      transition={{ delay: idx * 0.05, ease: "easeOut" }}
                       className="px-6 sm:px-12 py-8 sm:py-10 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-white/[0.04] transition-all duration-300 group gap-6 cursor-default relative overflow-hidden"
                     >
                       <div className="flex flex-col gap-3 relative z-10">
