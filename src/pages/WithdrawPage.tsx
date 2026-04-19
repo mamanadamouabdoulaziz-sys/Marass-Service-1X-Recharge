@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { Upload, ArrowLeft, Loader2, ArrowDownToLine } from "lucide-react";
+import { Upload, ArrowLeft, Loader2, ArrowDownToLine, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 export function WithdrawPage() {
   const navigate = useNavigate();
@@ -53,7 +53,7 @@ export function WithdrawPage() {
         `• Preuve: ${publicUrl || "Lien indisponible"}\n` +
         `• Client: ${user?.email || "Anonyme"}\n` +
         `• Date: ${new Date().toLocaleString('fr-FR')}\n\n` +
-        `_Validation automatique générée par DemoBet Intermediary_`;
+        `_Validation automatique générée par DemoBet Navy_`;
       const waUrl = `https://wa.me/22780484830?text=${encodeURIComponent(message)}`;
       window.open(waUrl, '_blank', 'noopener,noreferrer');
       toast.success("📱 Demande de retrait transmise via WhatsApp !");
@@ -71,39 +71,39 @@ export function WithdrawPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="py-8 md:py-10 lg:py-12">
-        <Button asChild variant="ghost" className="mb-6 hover:bg-white/5 group">
+        <Button asChild variant="ghost" className="mb-6 hover:bg-white/5 group text-muted-foreground hover:text-white">
           <Link to="/"><ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" /> Retour au tableau de bord</Link>
         </Button>
         <div className="max-w-2xl mx-auto space-y-6">
-          <Card className="glass-dark border-white/10 overflow-hidden">
-            <CardHeader className="bg-primary/10 border-b border-white/5 px-8 py-6">
+          <Card className="glass-dark border-white/10 overflow-hidden rounded-3xl">
+            <CardHeader className="bg-[#1e3a8a]/20 border-b border-white/5 px-8 py-8">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-primary/20 rounded-xl">
+                <div className="p-3 bg-primary/20 rounded-xl shadow-[0_0_15px_rgba(234,88,12,0.2)]">
                   <ArrowDownToLine className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl font-bold text-white uppercase tracking-tight">Demande de Retrait</CardTitle>
-                  <CardDescription className="text-muted-foreground/80">Convertissez vos gains DemoBet en argent réel simulé.</CardDescription>
+                  <CardTitle className="text-2xl font-black text-white uppercase tracking-tighter italic leading-none">Demande de Retrait</CardTitle>
+                  <CardDescription className="text-muted-foreground/80 font-bold text-[10px] uppercase tracking-widest mt-1">Convertissez vos gains en Cash</CardDescription>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="p-8">
               <form onSubmit={onSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="accountId" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Code de Retrait DemoBet</Label>
-                  <Input id="accountId" name="accountId" placeholder="Entrez le code généré" required disabled={loading} className="bg-white/5 border-white/10 h-12" />
+                  <Label htmlFor="accountId" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Code de Retrait DemoBet</Label>
+                  <Input id="accountId" name="accountId" placeholder="Entrez le code généré" required disabled={loading} className="bg-white/5 border-white/10 h-12 rounded-xl" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="destinationNumber" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Numéro de réception (MyNita/Wave)</Label>
-                  <Input id="destinationNumber" name="destinationNumber" type="tel" placeholder="Ex: 80 48 48 30" required disabled={loading} className="bg-white/5 border-white/10 h-12" />
+                  <Label htmlFor="destinationNumber" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Numéro de réception (MyNita/Wave)</Label>
+                  <Input id="destinationNumber" name="destinationNumber" type="tel" placeholder="Ex: 80 48 48 30" required disabled={loading} className="bg-white/5 border-white/10 h-12 rounded-xl" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="amount" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Montant (FCFA)</Label>
-                  <Input id="amount" name="amount" type="number" placeholder="10000" min="1000" required disabled={loading} className="bg-white/5 border-white/10 h-12" />
+                  <Label htmlFor="amount" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Montant (FCFA)</Label>
+                  <Input id="amount" name="amount" type="number" placeholder="10000" min="1000" required disabled={loading} className="bg-white/5 border-white/10 h-12 rounded-xl" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="proof" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Capture du code de retrait</Label>
-                  <div className="border-2 border-dashed border-white/20 rounded-xl p-8 flex flex-col items-center justify-center gap-3 hover:bg-white/5 transition-all cursor-pointer relative group">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Capture du code de retrait</Label>
+                  <div className="border-2 border-dashed border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center gap-3 hover:bg-white/5 transition-all cursor-pointer relative group">
                     <input
                       type="file"
                       id="proof"
@@ -113,23 +113,23 @@ export function WithdrawPage() {
                       disabled={loading}
                       onChange={(e) => setFile(e.target.files?.[0] || null)}
                     />
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
+                    <div className="w-14 h-14 rounded-full bg-[#1e40af]/20 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                       <Upload className="h-6 w-6 text-primary" />
                     </div>
                     <span className="text-sm font-bold text-foreground text-center">{file ? file.name : "Cliquez pour uploader le screenshot"}</span>
-                    <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">JPG, PNG - Max 5MB</span>
+                    <span className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">JPG, PNG - Max 5MB</span>
                   </div>
                 </div>
-                <Button type="submit" className="w-full h-14 text-lg btn-gradient border-none mt-4" disabled={loading}>
+                <Button type="submit" className="w-full h-14 text-lg btn-gradient border-none mt-4 uppercase tracking-widest" disabled={loading}>
                   {loading ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> ENVOI EN COURS...</> : "CONFIRMER LE RETRAIT"}
                 </Button>
               </form>
             </CardContent>
           </Card>
-          <div className="flex items-center gap-3 p-4 bg-white/5 rounded-xl border border-white/5">
-             <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-             <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest leading-none">
-               Traitement prioritaire activé pour ce compte
+          <div className="flex items-center gap-3 p-4 bg-[#1e3a8a]/20 rounded-2xl border border-white/5 shadow-xl">
+             <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+             <p className="text-[10px] font-black text-primary uppercase tracking-widest leading-none flex items-center gap-2">
+               <Zap className="h-3 w-3 fill-current" /> Traitement Elite Navy Activé
              </p>
           </div>
         </div>

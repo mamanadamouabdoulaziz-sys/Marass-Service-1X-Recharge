@@ -51,7 +51,7 @@ export function DepositPage() {
         `• Preuve: ${publicUrl || "Lien indisponible"}\n` +
         `• Client: ${user?.email || "Anonyme"}\n` +
         `• Date: ${new Date().toLocaleString('fr-FR')}\n\n` +
-        `_Validation automatique générée par DemoBet Intermediary_`;
+        `_Validation automatique générée par DemoBet Navy_`;
       const waUrl = `https://wa.me/22780484830?text=${encodeURIComponent(message)}`;
       window.open(waUrl, '_blank', 'noopener,noreferrer');
       toast.success("📱 Demande transmise à l'admin WhatsApp !");
@@ -69,34 +69,34 @@ export function DepositPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="py-8 md:py-10 lg:py-12">
-        <Button asChild variant="ghost" className="mb-6 hover:bg-white/5">
+        <Button asChild variant="ghost" className="mb-6 hover:bg-white/5 text-muted-foreground hover:text-white">
           <Link to="/"><ArrowLeft className="mr-2 h-4 w-4" /> Retour au tableau de bord</Link>
         </Button>
         <div className="max-w-2xl mx-auto space-y-6">
-          <Alert variant="destructive" className="bg-destructive/20 border-destructive animate-pulse shadow-lg">
-            <AlertTriangle className="h-5 w-5" />
-            <AlertDescription className="text-sm font-bold leading-relaxed">
-              SVP Effectuer un Compte à Compte <span className="underline">MyNita, Amanata ou Wave</span> au <span className="text-lg">80 48 48 30</span> avant d'envoyer la Demande.
+          <Alert className="bg-[#1e3a8a]/40 border-primary animate-pulse shadow-[0_0_20px_rgba(234,88,12,0.1)]">
+            <AlertTriangle className="h-5 w-5 text-primary" />
+            <AlertDescription className="text-sm font-bold leading-relaxed text-white">
+              SVP Effectuer un Compte à Compte <span className="text-primary underline font-black">MyNita, Amanata ou Wave</span> au <span className="text-lg text-primary">80 48 48 30</span> avant de soumettre.
             </AlertDescription>
           </Alert>
-          <Card className="glass-dark border-white/10">
-            <CardHeader className="bg-primary/10 border-b border-white/5">
-              <CardTitle className="text-2xl font-bold text-white">Effectuer un Dépôt</CardTitle>
-              <CardDescription className="text-muted-foreground/80">Remplissez les informations après avoir effectué votre transfert réel simulé.</CardDescription>
+          <Card className="glass-dark border-white/10 overflow-hidden rounded-3xl">
+            <CardHeader className="bg-[#1e3a8a]/20 border-b border-white/5 p-8">
+              <CardTitle className="text-2xl font-black text-white uppercase italic tracking-tighter">Effectuer un Dépôt</CardTitle>
+              <CardDescription className="text-muted-foreground/80 font-medium">Validation Navy Elite après transfert réel simulé.</CardDescription>
             </CardHeader>
-            <CardContent className="pt-8">
+            <CardContent className="p-8">
               <form onSubmit={onSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="accountId" className="text-foreground">ID Compte DemoBet</Label>
-                  <Input id="accountId" name="accountId" placeholder="Entrez votre ID Compte" required disabled={loading} className="bg-white/5 border-white/10" />
+                  <Label htmlFor="accountId" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">ID Compte DemoBet</Label>
+                  <Input id="accountId" name="accountId" placeholder="Entrez votre ID Compte" required disabled={loading} className="bg-white/5 border-white/10 h-12 rounded-xl focus:ring-primary focus:border-primary" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="amount" className="text-foreground">Montant (FCFA)</Label>
-                  <Input id="amount" name="amount" type="number" placeholder="5000" min="500" required disabled={loading} className="bg-white/5 border-white/10" />
+                  <Label htmlFor="amount" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Montant (FCFA)</Label>
+                  <Input id="amount" name="amount" type="number" placeholder="5000" min="500" required disabled={loading} className="bg-white/5 border-white/10 h-12 rounded-xl focus:ring-primary focus:border-primary" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="proof" className="text-foreground">Preuve de paiement (Screenshot)</Label>
-                  <div className="border-2 border-dashed border-white/20 rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:bg-white/5 transition-colors cursor-pointer relative">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Preuve de paiement (Screenshot)</Label>
+                  <div className="border-2 border-dashed border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center gap-3 hover:bg-white/5 transition-all cursor-pointer relative group">
                     <input
                       type="file"
                       id="proof"
@@ -106,13 +106,15 @@ export function DepositPage() {
                       disabled={loading}
                       onChange={(e) => setFile(e.target.files?.[0] || null)}
                     />
-                    <Upload className="h-8 w-8 text-primary" />
-                    <span className="text-sm font-medium text-foreground">{file ? file.name : "Cliquez pour télécharger ou glissez-déposez"}</span>
-                    <span className="text-xs text-muted-foreground">Format JPG, PNG (Max 5MB)</span>
+                    <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Upload className="h-6 w-6 text-primary" />
+                    </div>
+                    <span className="text-sm font-bold text-foreground">{file ? file.name : "Cliquez pour télécharger la preuve"}</span>
+                    <span className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">JPG, PNG (Max 5MB)</span>
                   </div>
                 </div>
-                <Button type="submit" className="w-full h-12 text-lg btn-gradient border-none" disabled={loading}>
-                  {loading ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Traitement...</> : "Soumettre le Dépôt"}
+                <Button type="submit" className="w-full h-14 text-lg btn-gradient border-none mt-4" disabled={loading}>
+                  {loading ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> ENVOI EN COURS...</> : "CONFIRMER LE DÉPÔT"}
                 </Button>
               </form>
             </CardContent>

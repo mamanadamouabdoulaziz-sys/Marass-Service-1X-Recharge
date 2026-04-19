@@ -3,48 +3,41 @@
 @tailwind utilities;
 @layer base {
   :root {
-    /* Pure Black & Deep Orange Base */
-    --background: 0 0% 5%;
+    /* Navy Blue & Vibrant Orange Base */
+    --background: 217 44% 12%;
     --foreground: 0 0% 98%;
-    --primary: 16 100% 40%;
+    --primary: 25 100% 50%;
     --primary-foreground: 0 0% 100%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
-    --border: 0 0% 20%;
-    --ring: 16 100% 40%;
-    --card: 0 0% 8%;
+    --muted: 217 44% 25%;
+    --muted-foreground: 217 20% 70%;
+    --border: 217 44% 30%;
+    --ring: 25 100% 50%;
+    --card: 217 44% 15%;
     --card-foreground: 0 0% 98%;
-    --popover: 0 0% 8%;
+    --popover: 217 44% 14%;
     --popover-foreground: 0 0% 98%;
-    --secondary: 0 0% 15%;
+    --secondary: 217 44% 20%;
     --secondary-foreground: 0 0% 98%;
-    --accent: 0 0% 18%;
+    --accent: 217 44% 22%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --input: 0 0% 18%;
-    --radius: 0.5rem;
-    --sidebar-background: 0 0% 7%;
+    --input: 217 44% 24%;
+    --radius: 0.75rem;
+    --sidebar-background: 217 44% 10%;
     --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 16 100% 40%;
+    --sidebar-primary: 25 100% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 15%;
-    --sidebar-accent-foreground: 16 100% 60%;
-    --sidebar-border: 0 0% 18%;
-    --sidebar-ring: 16 100% 40%;
+    --sidebar-accent: 217 44% 18%;
+    --sidebar-accent-foreground: 25 100% 60%;
+    --sidebar-border: 217 44% 20%;
+    --sidebar-ring: 25 100% 50%;
   }
   .dark {
-    /* Synced for total consistency */
-    --background: 0 0% 5%;
+    /* Synced for Elite Dark Theme */
+    --background: 217 44% 12%;
     --foreground: 0 0% 98%;
-    --primary: 16 100% 40%;
-    --primary-foreground: 0 0% 100%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
-    --border: 0 0% 20%;
-    --ring: 16 100% 40%;
-    --card: 0 0% 8%;
-    --card-foreground: 0 0% 98%;
+    --primary: 25 100% 50%;
   }
   * {
     @apply border-border;
@@ -53,25 +46,24 @@
     @apply bg-background text-foreground;
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  body {
-    @apply bg-background text-foreground;
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-    text-rendering: optimizeLegibility;
   }
 }
 @layer components {
   .btn-gradient {
-    @apply inline-flex items-center justify-center px-6 py-3 text-sm font-bold transition-all duration-300 text-white rounded-lg shadow-lg hover:scale-105 active:scale-95;
-    background: linear-gradient(135deg, #B45309 0%, #D97706 100%);
-    box-shadow: 0 10px 15px -3px rgba(180, 83, 9, 0.3);
+    @apply inline-flex items-center justify-center px-6 py-3 text-sm font-bold transition-all duration-300 text-white rounded-xl shadow-lg hover:scale-105 active:scale-95;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    box-shadow: 0 10px 15px -3px rgba(30, 64, 175, 0.3);
+  }
+  .btn-orange {
+    @apply inline-flex items-center justify-center px-6 py-3 text-sm font-bold transition-all duration-300 text-white rounded-xl shadow-lg hover:scale-105 active:scale-95;
+    background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+    box-shadow: 0 10px 15px -3px rgba(234, 88, 12, 0.3);
   }
   .bg-gradient-primary {
-    background: linear-gradient(135deg, #78350F 0%, #B45309 50%, #D97706 100%);
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%);
   }
   .text-gradient {
-    background: linear-gradient(90deg, #F59E0B 0%, #D97706 50%, #B45309 100%);
+    background: linear-gradient(90deg, #fb923c 0%, #f97316 50%, #ea580c 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -80,13 +72,6 @@
     @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl;
   }
   .glass-dark {
-    @apply bg-black/40 backdrop-blur-xl border border-white/10 shadow-2xl;
-  }
-  .shimmer-bg {
-    @apply relative overflow-hidden;
-  }
-  .shimmer-bg::before {
-    @apply absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/10 to-transparent;
-    content: '';
+    @apply bg-[#1e3a8a]/20 backdrop-blur-xl border border-white/10 shadow-2xl;
   }
 }

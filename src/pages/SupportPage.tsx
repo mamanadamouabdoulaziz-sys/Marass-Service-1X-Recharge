@@ -40,10 +40,10 @@ export function SupportPage() {
         storageId = res.storageId;
         publicUrl = await getPublicUrl({ storageId });
       }
-      await createClaim({ 
-        description, 
-        email, 
-        proofStorageId: storageId 
+      await createClaim({
+        description,
+        email,
+        proofStorageId: storageId
       });
       const message = `*RÉCLAMATION SUPPORT*\n\n` +
         `• Email Contact: ${email}\n` +
@@ -51,7 +51,7 @@ export function SupportPage() {
         `• Preuve: ${publicUrl || "Aucune preuve jointe"}\n` +
         `• Utilisateur: ${user?.email || "Anonyme"}\n` +
         `• Date: ${new Date().toLocaleString('fr-FR')}\n\n` +
-        `_Validation automatique générée par DemoBet Intermediary_`;
+        `_Validation automatique générée par DemoBet Navy_`;
       const waUrl = `https://wa.me/22780484830?text=${encodeURIComponent(message)}`;
       window.open(waUrl, '_blank', 'noopener,noreferrer');
       toast.success("📱 Ticket transmis à l'admin WhatsApp !");
@@ -73,38 +73,38 @@ export function SupportPage() {
           <Button asChild variant="ghost" className="hover:bg-white/5 text-muted-foreground hover:text-white">
             <Link to="/"><ArrowLeft className="mr-2 h-4 w-4" /> Retour</Link>
           </Button>
-          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-4 py-1.5 rounded-full border border-primary/20 animate-pulse">
+          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white bg-primary px-4 py-1.5 rounded-full shadow-lg shadow-primary/20 animate-pulse">
             <MessageSquare className="h-3 w-3" /> Support Prioritaire
           </div>
         </div>
         <div className="text-center max-w-2xl mx-auto space-y-4">
-          <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic">Centre d'Aide</h1>
+          <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic drop-shadow-2xl">Centre d'Aide Elite</h1>
           <p className="text-muted-foreground font-medium text-sm">
-            Un problème ? Nos agents traitent vos demandes après validation WhatsApp automatique.
+            Validation WhatsApp automatique pour un traitement en moins de 15 minutes.
           </p>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           <div className="lg:col-span-2 space-y-6">
-            <Card className="glass-dark border-white/10 shadow-2xl">
-              <CardHeader className="bg-primary/10 border-b border-white/5 p-6">
+            <Card className="glass-dark border-white/10 shadow-2xl rounded-3xl overflow-hidden">
+              <CardHeader className="bg-[#1e3a8a]/20 border-b border-white/5 p-8">
                 <CardTitle className="text-xl font-bold text-white flex items-center gap-3">
                   <HelpCircle className="h-5 w-5 text-primary" /> Nouvelle Réclamation
                 </CardTitle>
-                <CardDescription className="text-muted-foreground">Expliquez précisément votre problème pour une résolution rapide.</CardDescription>
+                <CardDescription className="text-muted-foreground">Votre satisfaction est notre priorité absolue.</CardDescription>
               </CardHeader>
               <CardContent className="p-8">
                 <form onSubmit={onSubmit} className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Email de contact</Label>
-                    <Input id="email" name="email" type="email" placeholder="votre@email.com" defaultValue={user?.email || ""} required disabled={loading} className="bg-white/5 border-white/10 h-12" />
+                    <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Email de contact</Label>
+                    <Input id="email" name="email" type="email" placeholder="votre@email.com" defaultValue={user?.email || ""} required disabled={loading} className="bg-white/5 border-white/10 h-12 rounded-xl" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="description" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Détails de l'incident</Label>
-                    <Textarea id="description" name="description" placeholder="Montant, Date, ID Compte, etc..." rows={5} required disabled={loading} className="bg-white/5 border-white/10 resize-none p-4" />
+                    <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Détails de l'incident</Label>
+                    <Textarea id="description" name="description" placeholder="Expliquez votre problème ici..." rows={5} required disabled={loading} className="bg-white/5 border-white/10 resize-none p-4 rounded-xl" />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Preuve (Optionnelle)</Label>
-                    <div className="border-2 border-dashed border-white/10 rounded-xl p-8 flex flex-col items-center justify-center gap-3 hover:bg-white/5 transition-all cursor-pointer relative group">
+                    <Label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Preuve (Optionnelle)</Label>
+                    <div className="border-2 border-dashed border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center gap-3 hover:bg-white/5 transition-all cursor-pointer relative group">
                       <input
                         type="file"
                         id="proof"
@@ -117,18 +117,18 @@ export function SupportPage() {
                         <Upload className="h-6 w-6 text-muted-foreground group-hover:text-primary" />
                       </div>
                       <span className="text-sm font-bold text-foreground">{file ? file.name : "Ajouter une capture d'écran"}</span>
-                      <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">JPG ou PNG max 10MB</span>
+                      <span className="text-[10px] text-muted-foreground uppercase font-black tracking-tighter">JPG ou PNG max 10MB</span>
                     </div>
                   </div>
                   <div className="space-y-4">
-                    <div className="bg-amber-500/5 border border-amber-500/20 p-4 rounded-xl flex items-start gap-3">
-                      <AlertCircle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
-                      <p className="text-[11px] text-amber-500 font-bold uppercase tracking-tight leading-relaxed">
-                        Note : Une fenêtre WhatsApp s'ouvrira pour finaliser le ticket après soumission.
+                    <div className="bg-primary/5 border border-primary/20 p-4 rounded-2xl flex items-start gap-3">
+                      <AlertCircle className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                      <p className="text-[11px] text-primary font-black uppercase tracking-tight leading-relaxed">
+                        Note : Une fenêtre WhatsApp Elite s'ouvrira après soumission pour valider votre ticket.
                       </p>
                     </div>
-                    <Button type="submit" className="w-full btn-gradient h-14 text-lg border-none" disabled={loading}>
-                      {loading ? <><Loader2 className="animate-spin mr-2 h-5 w-5" /> ENVOI...</> : "SOUMETTRE MON TICKET"}
+                    <Button type="submit" className="w-full btn-orange h-14 text-lg border-none uppercase tracking-widest" disabled={loading}>
+                      {loading ? <><Loader2 className="animate-spin mr-2 h-5 w-5" /> ENVOI...</> : "OUVRIR MON TICKET"}
                     </Button>
                   </div>
                 </form>
@@ -136,36 +136,35 @@ export function SupportPage() {
             </Card>
           </div>
           <div className="space-y-6">
-            <Card className="glass-dark border-white/10 shadow-xl sticky top-24">
-              <CardHeader className="border-b border-white/5 p-6">
-                <CardTitle className="text-lg font-bold text-white uppercase tracking-tight">Vos Tickets</CardTitle>
-                <CardDescription className="text-xs">Historique des demandes</CardDescription>
+            <Card className="glass-dark border-white/10 shadow-xl rounded-3xl sticky top-24 overflow-hidden">
+              <CardHeader className="bg-[#1e3a8a]/20 border-b border-white/5 p-6">
+                <CardTitle className="text-lg font-black text-white uppercase italic tracking-tighter leading-none">Historique Tickets</CardTitle>
               </CardHeader>
-              <CardContent className="p-4 space-y-4">
+              <CardContent className="p-4 space-y-4 max-h-[60vh] overflow-y-auto">
                 {myClaims.length > 0 ? (
                   myClaims.map((claim) => (
-                    <div key={claim._id} className="p-4 bg-white/5 border border-white/5 rounded-xl space-y-3 hover:bg-white/10 transition-all duration-300">
+                    <div key={claim._id} className="p-4 bg-white/5 border border-white/5 rounded-2xl space-y-3 hover:bg-white/10 transition-all duration-300">
                       <div className="flex justify-between items-start">
-                        <span className="font-black text-xs text-white">#ID-{claim._id.slice(-6).toUpperCase()}</span>
+                        <span className="font-black text-[10px] text-primary">#NAVY-{claim._id.slice(-6).toUpperCase()}</span>
                         <span className={`text-[9px] px-2.5 py-1 rounded-full font-black uppercase tracking-widest ${
-                          claim.status === "pending" ? "bg-amber-500/10 text-amber-500 border border-amber-500/20" : "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+                          claim.status === "pending" ? "bg-primary/10 text-primary border border-primary/20" : "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
                         }`}>
                           {claim.status === "pending" ? "En attente" : "Résolu"}
                         </span>
                       </div>
-                      <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed italic">"{claim.description}"</p>
-                      <div className="text-[10px] text-muted-foreground/60 font-bold flex justify-between pt-1">
+                      <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed italic font-medium">"{claim.description}"</p>
+                      <div className="text-[9px] text-muted-foreground/60 font-black uppercase tracking-widest flex justify-between pt-1">
                         <span>{format(claim.createdAt, "PPP", { locale: fr })}</span>
-                        <span className="text-primary/60">Actif</span>
+                        <span className="text-primary/60 italic">Actif</span>
                       </div>
                     </div>
                   ))
                 ) : (
                   <div className="text-center py-16 px-4 space-y-4">
                     <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mx-auto opacity-20">
-                      <MessageSquare className="h-6 w-6" />
+                      <MessageSquare className="h-6 w-6 text-primary" />
                     </div>
-                    <p className="text-sm text-muted-foreground italic font-medium">Aucun ticket ouvert.</p>
+                    <p className="text-sm text-muted-foreground italic font-medium uppercase tracking-tighter">Aucun ticket ouvert</p>
                   </div>
                 )}
               </CardContent>
