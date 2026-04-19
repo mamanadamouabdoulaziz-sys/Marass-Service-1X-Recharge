@@ -46,10 +46,10 @@ export function HomePage() {
             <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.3em] text-[10px] sm:text-xs">
               <Zap className="h-3 w-3 fill-current animate-pulse" /> Système Navy Elite v3
             </div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter text-white uppercase italic leading-[0.9] drop-shadow-2xl">Dashboard</h1>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter text-white uppercase italic leading-[0.9] drop-shadow-2xl">BIENVENUE</h1>
             <p className="text-muted-foreground/60 flex items-center gap-3 text-xs sm:text-sm font-bold uppercase tracking-widest">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              {user?.email ?? "Session Active"}
+              {user?.email ?? "Session Sécurisée"}
             </p>
           </div>
           <div className="flex flex-wrap gap-3 sm:gap-4">
@@ -96,8 +96,8 @@ export function HomePage() {
                             )}
                           </div>
                           <span className="font-black text-lg sm:text-xl text-white tracking-tight flex items-center gap-2">
-                            {tx.type === "deposit" ? "DÉPÔT" : "RETRAIT"} 
-                            <span className="text-muted-foreground/30 font-thin">|</span> 
+                            {tx.type === "deposit" ? "DÉPÔT" : "RETRAIT"}
+                            <span className="text-muted-foreground/30 font-thin">|</span>
                             <span className={tx.type === 'deposit' ? 'text-primary' : 'text-blue-400'}>
                               {tx.amount.toLocaleString()} <span className="text-[10px] sm:text-xs">FCFA</span>
                             </span>
@@ -136,7 +136,7 @@ export function HomePage() {
                   </div>
                   <Button asChild size="lg" className="btn-orange h-14 sm:h-16 px-10 rounded-2xl text-lg group">
                     <Link to="/deposit">
-                      DÉBUTER LE PROTOCOLE 
+                      DÉBUTER LE PROTOCOLE
                       <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </Button>
