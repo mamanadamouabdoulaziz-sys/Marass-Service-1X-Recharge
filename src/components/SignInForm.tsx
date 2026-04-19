@@ -4,13 +4,10 @@ import { useState, useCallback, useEffect } from "react";
 import { toast } from "sonner";
 import { PASSWORD_MIN_LENGTH, PASSWORD_TOO_SHORT_MESSAGE } from "@shared/auth";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "./ui/input-otp";
-
 type FormStep = "signIn" | "signUp" | "verifyEmail" | "forgotPassword" | "resetPassword";
 type FieldErrorKey = "email" | "password" | "newPassword" | "otp";
 type FieldErrors = Partial<Record<FieldErrorKey, string>>;
-
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 export function SignInForm() {
   const { signIn } = useAuthActions();
   const [step, setStep] = useState<FormStep>("signUp");
@@ -21,13 +18,11 @@ export function SignInForm() {
   const [submitting, setSubmitting] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-
   useEffect(() => {
     if (resendCooldown <= 0) return;
     const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
     return () => clearTimeout(timer);
   }, [resendCooldown]);
-
   const resetForm = useCallback(() => {
     setPassword("");
     setNewPassword("");
@@ -35,7 +30,6 @@ export function SignInForm() {
     setSubmitting(false);
     setFieldErrors({});
   }, []);
-
   const clearFieldError = useCallback((field: FieldErrorKey) => {
     setFieldErrors((current) =>
       current[field]
@@ -46,11 +40,9 @@ export function SignInForm() {
         : current
     );
   }, []);
-
   const validateCurrentStep = useCallback(() => {
     const nextErrors: FieldErrors = {};
     const normalizedEmail = email.trim();
-
     if (step === "signIn" || step === "signUp" || step === "forgotPassword") {
       if (!normalizedEmail) {
         nextErrors.email = "Email is required.";
@@ -58,7 +50,6 @@ export function SignInForm() {
         nextErrors.email = "Enter a valid email address.";
       }
     }
-
     if (step === "signIn" || step === "signUp") {
       if (!password) {
         nextErrors.password = "Password is required.";
@@ -66,13 +57,11 @@ export function SignInForm() {
         nextErrors.password = PASSWORD_TOO_SHORT_MESSAGE;
       }
     }
-
     if (step === "verifyEmail" || step === "resetPassword") {
       if (otp.length !== 6) {
         nextErrors.otp = "Enter the 6-digit code from your email.";
       }
     }
-
     if (step === "resetPassword") {
       if (!newPassword) {
         nextErrors.newPassword = "New password is required.";
@@ -80,21 +69,17 @@ export function SignInForm() {
         nextErrors.newPassword = PASSWORD_TOO_SHORT_MESSAGE;
       }
     }
-
     setFieldErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   }, [email, newPassword, otp, password, step]);
-
   const handleSubmit = useCallback(async () => {
     if (!validateCurrentStep()) {
       return;
     }
-
     setSubmitting(true);
     const normalizedEmail = email.trim();
     const formData = new FormData();
     formData.set("email", normalizedEmail);
-
     try {
       switch (step) {
         case "signIn":
@@ -102,7 +87,6 @@ export function SignInForm() {
           formData.set("flow", "signIn");
           await signIn("password", formData);
           break;
-
         case "signUp":
           formData.set("password", password);
           formData.set("flow", "signUp");
@@ -124,14 +108,12 @@ export function SignInForm() {
           setResendCooldown(60);
           toast.info("Check your email for a verification code.");
           return;
-
         case "verifyEmail":
           formData.set("code", otp);
           formData.set("flow", "email-verification");
           await signIn("password", formData);
           toast.success("Email verified!");
           break;
-
         case "forgotPassword":
           formData.set("flow", "reset");
           await signIn("password", formData);
@@ -140,7 +122,6 @@ export function SignInForm() {
           setResendCooldown(60);
           toast.info("Check your email for a reset code.");
           return;
-
         case "resetPassword":
           formData.set("code", otp);
           formData.set("newPassword", newPassword);
@@ -154,7 +135,6 @@ export function SignInForm() {
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
       const lowerMsg = msg.toLowerCase();
-
       if (lowerMsg.includes("rate_limit") || msg.includes("429") || lowerMsg.includes("toomanyfailedattempts")) {
         toast.error("Too many attempts. Please wait a few minutes before trying again.");
       } else if (
@@ -182,7 +162,6 @@ export function SignInForm() {
         }));
       } else if (lowerMsg.includes("invalidaccountid") || lowerMsg.includes("could not find")) {
         if (step === "signIn") {
-          // Auto-fallback: no account found, switch to sign-up and retry
           resetForm();
           setStep("signUp");
           setPassword(password);
@@ -214,18 +193,6 @@ export function SignInForm() {
           ...current,
           email: "An account with this email already exists. Please sign in instead.",
         }));
-      } else if (lowerMsg.includes("deleted")) {
-        toast.error("This account has been deleted. Please create a new account.");
-      } else if (msg.includes("Failed to send")) {
-        toast.error("Could not send email. Please try again later.");
-      } else if (lowerMsg.includes("not configured") || msg.includes("SITE_URL") || lowerMsg.includes("not enabled")) {
-        toast.error("Email service is not available. Please contact support.");
-      } else if (msg.includes("Missing") && msg.includes("param")) {
-        toast.error("Something went wrong. Please refresh the page and try again.");
-      } else if (step === "signIn") {
-        toast.error("Could not sign in. Please check your credentials.");
-      } else if (step === "signUp") {
-        toast.error("Could not create account. Please try again.");
       } else {
         toast.error(msg || "Something went wrong. Please try again.");
       }
@@ -233,7 +200,6 @@ export function SignInForm() {
       setSubmitting(false);
     }
   }, [step, email, password, newPassword, otp, signIn, resetForm, validateCurrentStep]);
-
   const handleResendCode = useCallback(async () => {
     if (resendCooldown > 0) return;
     setSubmitting(true);
@@ -250,15 +216,13 @@ export function SignInForm() {
       setSubmitting(false);
     }
   }, [email, resendCooldown, signIn, step]);
-
-  const inputClass = "w-full px-4 py-3 text-base bg-secondary text-secondary-foreground placeholder:text-muted-foreground border border-input rounded-lg focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-slate-950 transition-all duration-200 outline-none";
-  const buttonClass = "w-full px-6 py-3 bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed font-semibold rounded-lg";
-  const linkClass = "text-primary hover:text-primary/80 hover:underline font-medium cursor-pointer transition-colors duration-200";
-
+  const inputClass = "w-full px-4 py-3 text-base bg-[#1e3a8a]/10 text-white placeholder:text-muted-foreground/50 border border-white/10 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all duration-200";
+  const buttonClass = "w-full px-6 py-4 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white hover:brightness-110 active:scale-95 transition-all duration-200 shadow-lg font-black uppercase tracking-[0.2em] rounded-xl disabled:opacity-50 disabled:cursor-not-allowed";
+  const linkClass = "text-primary hover:text-primary/80 font-black uppercase text-[10px] tracking-widest cursor-pointer transition-colors duration-200";
   return (
     <div className="w-full">
       <form
-        className="flex flex-col gap-4"
+        className="flex flex-col gap-5"
         noValidate
         onSubmit={(e) => {
           e.preventDefault();
@@ -270,7 +234,7 @@ export function SignInForm() {
             <input
               className={`${inputClass} ${fieldErrors.email ? "border-destructive focus:ring-destructive/20" : ""}`}
               type="email"
-              placeholder="Email"
+              placeholder="VOTRE EMAIL"
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -279,53 +243,32 @@ export function SignInForm() {
               required
               disabled={submitting}
               autoComplete="email"
-              aria-invalid={Boolean(fieldErrors.email)}
-              aria-describedby={fieldErrors.email ? "auth-email-error" : undefined}
             />
-            {fieldErrors.email && (
-              <p id="auth-email-error" className="mt-1 text-sm text-destructive" role="alert">
-                {fieldErrors.email}
-              </p>
-            )}
+            {fieldErrors.email && <p className="mt-1.5 text-[10px] font-black uppercase text-destructive tracking-widest">{fieldErrors.email}</p>}
           </div>
         )}
-
         {(step === "signIn" || step === "signUp") && (
           <div>
             <input
               className={`${inputClass} ${fieldErrors.password ? "border-destructive focus:ring-destructive/20" : ""}`}
               type="password"
-              placeholder="Password"
+              placeholder="MOT DE PASSE"
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
                 clearFieldError("password");
               }}
               required
-              minLength={step === "signUp" ? PASSWORD_MIN_LENGTH : undefined}
               disabled={submitting}
               autoComplete={step === "signUp" ? "new-password" : "current-password"}
-              aria-invalid={Boolean(fieldErrors.password)}
-              aria-describedby={fieldErrors.password ? "auth-password-error" : step === "signUp" ? "auth-password-hint" : undefined}
             />
-            {fieldErrors.password ? (
-              <p id="auth-password-error" className="mt-1 text-sm text-destructive" role="alert">
-                {fieldErrors.password}
-              </p>
-            ) : step === "signUp" ? (
-              <p id="auth-password-hint" className="mt-1 text-xs text-muted-foreground">
-                Minimum {PASSWORD_MIN_LENGTH} characters
-              </p>
-            ) : null}
+            {fieldErrors.password && <p className="mt-1.5 text-[10px] font-black uppercase text-destructive tracking-widest">{fieldErrors.password}</p>}
           </div>
         )}
-
         {(step === "verifyEmail" || step === "resetPassword") && (
-          <div className="flex flex-col items-center gap-3">
-            <p className="text-sm text-muted-foreground text-center">
-              {step === "verifyEmail"
-                ? "Enter the 6-digit code sent to your email"
-                : "Enter the 6-digit reset code sent to your email"}
+          <div className="flex flex-col items-center gap-4">
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">
+              ENTREZ LE CODE À 6 CHIFFRES
             </p>
             <InputOTP
               maxLength={6}
@@ -337,101 +280,65 @@ export function SignInForm() {
               disabled={submitting}
             >
               <InputOTPGroup>
-                <InputOTPSlot index={0} />
-                <InputOTPSlot index={1} />
-                <InputOTPSlot index={2} />
-                <InputOTPSlot index={3} />
-                <InputOTPSlot index={4} />
-                <InputOTPSlot index={5} />
+                <InputOTPSlot index={0} className="border-white/20 bg-white/5" />
+                <InputOTPSlot index={1} className="border-white/20 bg-white/5" />
+                <InputOTPSlot index={2} className="border-white/20 bg-white/5" />
+                <InputOTPSlot index={3} className="border-white/20 bg-white/5" />
+                <InputOTPSlot index={4} className="border-white/20 bg-white/5" />
+                <InputOTPSlot index={5} className="border-white/20 bg-white/5" />
               </InputOTPGroup>
             </InputOTP>
-            {fieldErrors.otp && (
-              <p className="text-sm text-destructive text-center" role="alert">
-                {fieldErrors.otp}
-              </p>
-            )}
+            {fieldErrors.otp && <p className="text-[10px] font-black uppercase text-destructive tracking-widest">{fieldErrors.otp}</p>}
           </div>
         )}
-
         {step === "resetPassword" && (
           <div>
             <input
               className={`${inputClass} ${fieldErrors.newPassword ? "border-destructive focus:ring-destructive/20" : ""}`}
               type="password"
-              placeholder="New password"
+              placeholder="NOUVEAU MOT DE PASSE"
               value={newPassword}
               onChange={(e) => {
                 setNewPassword(e.target.value);
                 clearFieldError("newPassword");
               }}
               required
-              minLength={PASSWORD_MIN_LENGTH}
               disabled={submitting}
               autoComplete="new-password"
-              aria-invalid={Boolean(fieldErrors.newPassword)}
-              aria-describedby={fieldErrors.newPassword ? "auth-new-password-error" : "auth-new-password-hint"}
             />
-            {fieldErrors.newPassword ? (
-              <p id="auth-new-password-error" className="mt-1 text-sm text-destructive" role="alert">
-                {fieldErrors.newPassword}
-              </p>
-            ) : (
-              <p id="auth-new-password-hint" className="mt-1 text-xs text-muted-foreground">
-                Minimum {PASSWORD_MIN_LENGTH} characters
-              </p>
-            )}
+            {fieldErrors.newPassword && <p className="mt-1.5 text-[10px] font-black uppercase text-destructive tracking-widest">{fieldErrors.newPassword}</p>}
           </div>
         )}
-
         <button className={buttonClass} type="submit" disabled={submitting}>
           {submitting ? (
-            <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mx-auto" />
-          ) : step === "signIn" ? "Sign in"
-            : step === "signUp" ? "Sign up"
-            : step === "verifyEmail" ? "Verify"
-            : step === "forgotPassword" ? "Send reset code"
-            : "Reset password"}
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
+          ) : step === "signIn" ? "SE CONNECTER"
+            : step === "signUp" ? "S'INSCRIRE"
+            : step === "verifyEmail" ? "VÉRIFIER"
+            : step === "forgotPassword" ? "ENVOYER LE CODE"
+            : "RÉINITIALISER"}
         </button>
-
-        {(step === "verifyEmail" || step === "resetPassword") && (
-          <div className="text-center text-sm text-muted-foreground">
-            <button
-              type="button"
-              className={linkClass}
-              onClick={() => void handleResendCode()}
-              disabled={submitting || resendCooldown > 0}
-            >
-              {resendCooldown > 0 ? `Resend code (${resendCooldown}s)` : "Resend code"}
-            </button>
-          </div>
-        )}
-
-        <div className="text-center text-sm text-muted-foreground">
+        <div className="text-center space-y-3 pt-2">
           {(step === "signIn" || step === "signUp") && (
-            <>
-              <span>
-                {step === "signIn" ? "Don't have an account? " : "Already have an account? "}
-              </span>
+            <div className="flex flex-col gap-2">
               <button
                 type="button"
                 className={linkClass}
                 onClick={() => { resetForm(); setStep(step === "signIn" ? "signUp" : "signIn"); }}
                 disabled={submitting}
               >
-                {step === "signIn" ? "Sign up instead" : "Sign in instead"}
+                {step === "signIn" ? "CRÉER UN COMPTE ELITE" : "DÉJÀ MEMBRE ? SE CONNECTER"}
               </button>
-            </>
-          )}
-          {step === "signIn" && (
-            <div className="mt-2">
-              <button
-                type="button"
-                className={linkClass}
-                onClick={() => { resetForm(); setStep("forgotPassword"); }}
-                disabled={submitting}
-              >
-                Forgot password?
-              </button>
+              {step === "signIn" && (
+                <button
+                  type="button"
+                  className={linkClass}
+                  onClick={() => { resetForm(); setStep("forgotPassword"); }}
+                  disabled={submitting}
+                >
+                  MOT DE PASSE OUBLIÉ ?
+                </button>
+              )}
             </div>
           )}
           {(step === "forgotPassword" || step === "verifyEmail" || step === "resetPassword") && (
@@ -441,28 +348,11 @@ export function SignInForm() {
               onClick={() => { resetForm(); setStep("signIn"); }}
               disabled={submitting}
             >
-              Back to sign in
+              RETOUR À LA CONNEXION
             </button>
           )}
         </div>
       </form>
-
-      {(step === "signIn" || step === "signUp") && (
-        <>
-          <div className="flex items-center justify-center my-6">
-            <hr className="flex-1 h-px bg-border" />
-            <span className="px-4 text-sm text-muted-foreground">or</span>
-            <hr className="flex-1 h-px bg-border" />
-          </div>
-          <button
-            className="w-full px-6 py-3 bg-secondary text-secondary-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed font-semibold rounded-lg border border-input"
-            onClick={() => void signIn("anonymous")}
-            disabled={submitting}
-          >
-            Sign in anonymously
-          </button>
-        </>
-      )}
     </div>
   );
 }

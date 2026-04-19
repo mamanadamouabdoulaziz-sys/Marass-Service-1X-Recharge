@@ -53,9 +53,10 @@ export function DepositPage() {
         `• Date: ${new Date().toLocaleString('fr-FR')}\n\n` +
         `_Validation automatique générée par DemoBet Navy_`;
       const waUrl = `https://wa.me/22780484830?text=${encodeURIComponent(message)}`;
-      window.open(waUrl, '_blank', 'noopener,noreferrer');
       toast.success("📱 Demande transmise à l'admin WhatsApp !");
       if ('vibrate' in navigator) navigator.vibrate(200);
+      // Use window.location.href for better mobile deep-link triggering
+      window.location.href = waUrl;
       setTimeout(() => {
         navigate("/");
       }, 1500);

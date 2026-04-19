@@ -22,7 +22,7 @@ export function AppLayout({ children, container = false, className, contentClass
     <SidebarProvider defaultOpen={false}>
       <AppSidebar />
       <SidebarInset className={`bg-background min-h-screen relative flex flex-col ${className || ""}`}>
-        {/* Navy Complementary Disclaimer Banner - Level 70 Z-index */}
+        {/* Navy Complementary Disclaimer Banner */}
         <div className="sticky top-0 w-full bg-gradient-to-r from-[#be123c] via-[#ea580c] to-[#be123c] text-white px-4 py-2.5 flex items-center justify-center gap-3 text-[10px] sm:text-[11px] font-black shadow-[0_4px_25px_rgba(190,18,60,0.5)] z-[70] border-b border-white/20 uppercase tracking-widest h-[42px] sm:h-[44px]">
           <AlertTriangle className="h-4 w-4 animate-pulse shrink-0 drop-shadow-md" />
           <span className="text-center leading-none">
@@ -30,13 +30,11 @@ export function AppLayout({ children, container = false, className, contentClass
           </span>
         </div>
         <Authenticated>
-          {/* Enhanced Fiery Bull Parallax Background Layer */}
           <motion.div
             style={{ y: backgroundY }}
             className="fiery-bg-layer"
           />
           <div className="fiery-scrim" />
-          {/* Sticky Header with reliable offset from disclaimer */}
           <header className="sticky top-[42px] sm:top-[44px] left-0 right-0 z-[60] h-16 bg-background/40 backdrop-blur-2xl border-b border-white/5 px-4 flex items-center justify-between transition-colors duration-300">
             <SidebarTrigger className="h-10 w-10 bg-gradient-to-r from-[#1e3a8a] to-[#3b82f6] border-l-2 border-primary text-white hover:brightness-110 transition-all rounded-xl shadow-[0_4px_15px_rgba(30,58,138,0.5)] flex items-center justify-center group">
               <Menu className="h-5 w-5 group-hover:scale-110 transition-transform" />
@@ -74,15 +72,15 @@ export function AppLayout({ children, container = false, className, contentClass
                   <CardHeader className="text-center pb-6 pt-10">
                     <div className="mx-auto mb-6 flex flex-col items-center">
                       <div className="w-24 h-24 rounded-full bg-black/40 flex items-center justify-center p-4 border border-white/5 shadow-2xl relative">
-                        <div className="hexagon-border-glow w-full h-full">
+                        <div className="hexagon-border-glow w-full h-full flex items-center justify-center">
                           <div className="login-logo-hex w-full h-full flex items-center justify-center relative z-10 shadow-inner">
-                            <span className="text-white text-5xl font-black italic drop-shadow-lg">S</span>
+                            <span className="text-white text-5xl font-black italic drop-shadow-lg leading-none flex items-center justify-center">S</span>
                           </div>
                         </div>
                       </div>
                       <div className="mt-4 flex flex-col items-center space-y-0.5">
                         <span className="gold-teal-gradient text-sm tracking-[0.2em] uppercase leading-tight">Mararasass Service</span>
-                        <span className="text-[#FFD700] text-[10px] font-black tracking-[0.4em] uppercase leading-tight">DÉPÔT • RETRAIT</span>
+                        <span className="text-[#FFD700] text-[10px] font-black tracking-[0.5em] uppercase leading-tight">DÉPÔT • RETRAIT</span>
                         <span className="branding-glow-blue text-2xl tracking-tighter uppercase leading-none">1XBET</span>
                       </div>
                     </div>
@@ -97,16 +95,15 @@ export function AppLayout({ children, container = false, className, contentClass
             </AnimatePresence>
           </div>
         </Unauthenticated>
-        {/* Navy Support Footer - Level 55 Z-index */}
         <footer className="fixed bottom-0 left-0 right-0 z-[55] bg-[#1e3a8a]/60 backdrop-blur-2xl border-t border-white/10 px-4 py-3.5 flex items-center justify-center md:justify-between group transition-all duration-300">
           <div className="hidden md:flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_12px_rgba(234,88,12,0.9)]" />
             <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Elite Support Actif</span>
           </div>
           <div className="flex items-center gap-4">
-            <a 
-              href="https://wa.me/22780484830" 
-              target="_blank" 
+            <a
+              href="https://wa.me/22780484830"
+              target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 bg-white/5 border border-white/10 px-5 py-2 rounded-full shadow-lg hover:bg-white/10 transition-all active:scale-95 group"
             >
